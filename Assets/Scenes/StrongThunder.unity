@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.12569553, g: 0.13860431, b: 0.15089944, a: 1}
+  m_IndirectSpecularColor: {r: 0.12900409, g: 0.14220345, b: 0.15474868, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -989,7 +989,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!81 &963194226
 AudioListener:
   m_ObjectHideFlags: 0
@@ -1248,7 +1248,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1096128264
 Transform:
   m_ObjectHideFlags: 0
@@ -1598,6 +1598,10 @@ PrefabInstance:
     - target: {fileID: 8872345339823386448, guid: 75d32157d14da7e468d8b5273b297a28, type: 3}
       propertyPath: m_Name
       value: XR Origin
+      objectReference: {fileID: 0}
+    - target: {fileID: 8872345339823386448, guid: 75d32157d14da7e468d8b5273b297a28, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8872345339823386477, guid: 75d32157d14da7e468d8b5273b297a28, type: 3}
       propertyPath: m_Enabled

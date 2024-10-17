@@ -143,6 +143,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: XR Origin
       objectReference: {fileID: 0}
+    - target: {fileID: 8872345339823386448, guid: 75d32157d14da7e468d8b5273b297a28, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8872345339823386477, guid: 75d32157d14da7e468d8b5273b297a28, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -1359,7 +1363,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1096128264
 Transform:
   m_ObjectHideFlags: 0
