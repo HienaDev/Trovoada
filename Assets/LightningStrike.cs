@@ -5,62 +5,102 @@ using UnityEngine;
 [RequireComponent(typeof(Light))]
 public class LightningStrike : MonoBehaviour
 {
-    [SerializeField] private Vector2 intensityStrike;
-    private float intensityNextStrike;
-    [SerializeField] private Vector2 timeToLastStrike;
-    private float timeToNextStrike;
-    [SerializeField] private Vector2 nextStrikeCooldown;
+    private Light lightiningStrike;
+
+    [SerializeField] private Vector2 delay = new Vector2(0.3f, 3f);
+    private float currentDelay;
+
+    [SerializeField] private Vector2 timeLightStaysOn = new Vector2(0.1f, 0.3f);
+    private float currentTime;
+
+    [SerializeField] private Vector2 lightIntensity = new Vector2(10f, 100f);
+    [SerializeField] private Vector2 lightSound = new Vector2(0.3f, 1f);
+
+    [SerializeField] private Vector2 nextStrikeCooldown = new Vector2(0.3f, 3f);
     private float strikeCooldown;
-    private float justStruck;
 
-    private Light lightStrike;
+    private AudioSource lightingSound;
 
-    private bool readyForNextStrike = true;
+    [SerializeField] private AudioClip weakLightning;
+    [SerializeField] private AudioClip mediumLightning;
+    [SerializeField] private AudioClip strongLightning;
+    private List<AudioClip> lightningSounds = new List<AudioClip> ();   
 
-    // Start is called before the first frame update
-    void Start()
+    private IEnumerator Start()
     {
-        lightStrike = GetComponent<Light>();
 
-        intensityNextStrike = Random.Range(intensityStrike.x, intensityStrike.y);
-        timeToNextStrike = Random.Range(timeToLastStrike.x, timeToLastStrike.y);
+        lightningSounds.Add(weakLightning);
+        lightningSounds.Add(mediumLightning);
+        lightningSounds.Add(strongLightning);
+
+        lightiningStrike = GetComponent<Light>();
+        lightingSound = GetComponent<AudioSource>();
+
+        currentDelay = Random.Range(delay.x, delay.y);
+        currentTime = Random.Range(timeLightStaysOn.x, timeLightStaysOn.y);
+        strikeCooldown = Random.Range(nextStrikeCooldown.x, nextStrikeCooldown.y);
+
+        yield return new WaitForSeconds(2f);
+
+        StartCoroutine(Strike());
+    }
+
+    private IEnumerator Strike()
+    {
+        Debug.Log(currentDelay);
+        float nextDelay = currentDelay - currentTime;
+
+        lightiningStrike.intensity = MapRange(currentDelay, delay.x, delay.y, lightIntensity.y, lightIntensity.x);
+        if(nextDelay < 0f)
+        {
+            PlayLightningSound();
+        }
+
+        float time = 0f;
+
+        float flickerDelay = 0.1f;
+
+        while (time < currentTime)
+        {
+            time += Time.deltaTime;
+            if(time > flickerDelay)
+            {
+                lightiningStrike.intensity += Random.Range(-10f, 10f);
+                flickerDelay += 0.1f;
+            }
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(currentTime);
+        lightiningStrike.intensity = 0f;
+
+        yield return new WaitForSeconds(nextDelay);
+
+        if (nextDelay > 0f)
+        {
+            PlayLightningSound();
+        }
+
+        Debug.Log("trigger sound");
+
+        yield return new WaitForSeconds(strikeCooldown);
+
         strikeCooldown = Random.Range(nextStrikeCooldown.x, nextStrikeCooldown.y);
 
         StartCoroutine(Strike());
     }
 
-    // Update is called once per frame
-    void Update()
+    private void PlayLightningSound()
     {
-        //if(readyForNextStrike && Time.time - justStruck > strikeCooldown)
-        //{
-        //    readyForNextStrike = false;
-        //    StartCoroutine(Strike());
-        //}
+        lightingSound.volume = MapRange(currentDelay, delay.x, delay.y, lightSound.y, lightSound.x);
+        lightingSound.pitch = Random.Range(0.9f, 1.1f);
+        lightingSound.clip = lightningSounds[Random.Range(0, lightningSounds.Count)];
+        lightingSound.Play();
     }
 
-    private IEnumerator Strike()
+    private float MapRange(float value, float fromMin, float fromMax, float toMin, float toMax)
     {
-        float lerpValue = 0f;
-
-        while(lerpValue < 1f)
-        {
-            lerpValue += Time.deltaTime / (timeToNextStrike / 2);
-            lightStrike.intensity = Mathf.Lerp(0, intensityNextStrike, lerpValue);
-            yield return null;
-        }
-
-        while (lerpValue > 0f)
-        {
-            lerpValue -= Time.deltaTime / (timeToNextStrike / 2);
-            lightStrike.intensity = Mathf.Lerp(0, intensityNextStrike, lerpValue);
-            yield return null;
-        }
-
-        intensityNextStrike = Random.Range(intensityStrike.x, intensityStrike.y);
-        timeToNextStrike = Random.Range(timeToLastStrike.x, timeToLastStrike.y);
-        strikeCooldown = Random.Range(nextStrikeCooldown.x, nextStrikeCooldown.y);
-        justStruck = Time.time;
-        readyForNextStrike = true;
+        return toMin + (value - fromMin) * (toMax - toMin) / (fromMax - fromMin);
     }
+
 }
