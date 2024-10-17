@@ -11,4 +11,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/WeakThunder.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
-  m_configObjects: {}
+  m_configObjects:
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 417838936aa2cc448953d533a56c94d5, type: 2}
+    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 199a456e5b9ba974db0e13a05de50912, type: 2}
