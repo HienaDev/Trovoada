@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 public class LightningStrike : MonoBehaviour
@@ -18,17 +19,26 @@ public class LightningStrike : MonoBehaviour
 
     [SerializeField] private Vector2 nextStrikeCooldown = new Vector2(0.3f, 3f);
     private float strikeCooldown;
+    private bool lightningReady;
+    private float timer = 0f;
 
     private AudioSource lightingSound;
 
     [SerializeField] private AudioClip weakLightning;
     [SerializeField] private AudioClip mediumLightning;
     [SerializeField] private AudioClip strongLightning;
-    private List<AudioClip> lightningSounds = new List<AudioClip> ();   
+    private List<AudioClip> lightningSounds = new List<AudioClip> ();
+
+    [SerializeField] private GameObject rainSound;
+
+    private bool lightning = true;
+
+    [SerializeField] private Slider lightingIntensitySlider;
+    private int[] sliderGrid = new int[6] { 0, 20, 40, 60, 80, 100 };
 
     private IEnumerator Start()
     {
-
+        lightningReady = true;
         lightningSounds.Add(weakLightning);
         lightningSounds.Add(mediumLightning);
         lightningSounds.Add(strongLightning);
@@ -42,7 +52,25 @@ public class LightningStrike : MonoBehaviour
 
         yield return new WaitForSeconds(2f);
 
-        StartCoroutine(Strike());
+        //StartCoroutine(Strike());
+    }
+
+    public void Update()
+    {
+        if (lightning)
+        {
+            timer += Time.deltaTime;
+        }
+
+        Debug.Log((timer) + " : " + strikeCooldown);
+       
+
+        if(timer >= strikeCooldown && lightningReady)
+        {
+            lightningReady = false;
+
+            StartCoroutine(Strike());
+        }
     }
 
     private IEnumerator Strike()
@@ -87,7 +115,9 @@ public class LightningStrike : MonoBehaviour
 
         strikeCooldown = Random.Range(nextStrikeCooldown.x, nextStrikeCooldown.y);
 
-        StartCoroutine(Strike());
+        lightningReady = true;
+        timer = 0f;
+
     }
 
     private void PlayLightningSound()
@@ -103,4 +133,37 @@ public class LightningStrike : MonoBehaviour
         return toMin + (value - fromMin) * (toMax - toMin) / (fromMax - fromMin);
     }
 
+    public void ToggleLightning()
+    {
+        lightning = !lightning;
+    }
+
+    public void ToggleRain() 
+    {
+        rainSound.SetActive(!rainSound.activeSelf);
+    }
+
+    public void TriggerLightning()
+    {
+        StartCoroutine(Strike());
+    }
+
+    public void ChangeLightningIntensity()
+    {
+        float currValue = lightingIntensitySlider.value * 100;
+
+        float minDistance = float.MaxValue;
+        int smallest = 0;
+
+        for (int i = 0; i < sliderGrid.Length; i++)
+        {
+            if (Mathf.Abs(currValue - sliderGrid[i]) < minDistance)
+            {
+                minDistance = Mathf.Abs(currValue - sliderGrid[i]);
+                smallest = i;
+            }
+        }
+
+        lightingIntensitySlider.value = smallest * 0.2f;
+    }
 }
