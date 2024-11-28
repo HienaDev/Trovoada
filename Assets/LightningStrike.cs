@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Light))]
+
 public class LightningStrike : MonoBehaviour
 {
-    private Light lightiningStrike;
+    [SerializeField] private Light lightiningStrike;
 
     [SerializeField] private Vector2 delay = new Vector2(0.3f, 3f);
     private float currentDelay;
@@ -33,7 +33,7 @@ public class LightningStrike : MonoBehaviour
         lightningSounds.Add(mediumLightning);
         lightningSounds.Add(strongLightning);
 
-        lightiningStrike = GetComponent<Light>();
+        //lightiningStrike = GetComponent<Light>();
         lightingSound = GetComponent<AudioSource>();
 
         currentDelay = Random.Range(delay.x, delay.y);
