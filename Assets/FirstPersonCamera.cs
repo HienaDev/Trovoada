@@ -33,7 +33,7 @@ public class FirstPersonCamera : MonoBehaviour
         // Optionally lock Y-axis rotation
         // This prevents the player body from rotating on the Y-axis
         yRotation += mouseX;
-        yRotation = Mathf.Clamp(yRotation, -60f - 90f, 60f - 90f); // Locking Y-rotation within a specific range (optional)
+        //yRotation = Mathf.Clamp(yRotation, -60f - 90f, 60f - 90f); // Locking Y-rotation within a specific range (optional)
 
         // Apply the rotation to the player body (only on the Y-axis if needed)
         playerBody.localRotation = Quaternion.Euler(0f, yRotation, 0f);
