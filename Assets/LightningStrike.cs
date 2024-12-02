@@ -6,10 +6,12 @@ using UnityEngine.UI;
 
 public class LightningStrike : MonoBehaviour
 {
+
     [SerializeField] private Light lightiningStrike;
 
-    [SerializeField] private Vector2 delay = new Vector2(0.3f, 3f);
+    private Vector2 delay = new Vector2(0.3f, 3f);
     private float currentDelay;
+    [SerializeField] private Vector2[] delayMeter;
 
     [SerializeField] private Vector2 timeLightStaysOn = new Vector2(0.1f, 0.3f);
     private float currentTime;
@@ -27,17 +29,25 @@ public class LightningStrike : MonoBehaviour
     [SerializeField] private AudioClip weakLightning;
     [SerializeField] private AudioClip mediumLightning;
     [SerializeField] private AudioClip strongLightning;
-    private List<AudioClip> lightningSounds = new List<AudioClip> ();
+    private List<AudioClip> lightningSounds = new List<AudioClip>();
 
-    [SerializeField] private GameObject rainSound;
+    [SerializeField] private AudioSource rainSound;
 
     private bool lightning = true;
 
     [SerializeField] private Slider lightingIntensitySlider;
     private int[] sliderGrid = new int[6] { 0, 20, 40, 60, 80, 100 };
 
+
+    private int currentDelayForDebug;
+
     private IEnumerator Start()
     {
+
+        currentDelayForDebug = (int)(lightingIntensitySlider.value * 5f);
+
+        ChangeLightningIntensity();
+
         lightningReady = true;
         lightningSounds.Add(weakLightning);
         lightningSounds.Add(mediumLightning);
@@ -57,15 +67,51 @@ public class LightningStrike : MonoBehaviour
 
     public void Update()
     {
+
+        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.R))
+        {
+            ToggleRain();
+        }
+
+        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.T))
+        {
+            ToggleLightning();
+        }
+
+        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.Y))
+        {
+            TriggerLightning();
+        }
+
+        if (Input.GetKeyDown(KeyCode.KeypadPlus))
+        {
+            if (currentDelayForDebug < 6)
+            {
+                currentDelayForDebug++;
+                ChangeLightingWithKeys(currentDelayForDebug);
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.KeypadMinus))
+        {
+            if (currentDelayForDebug > 0)
+            {
+                currentDelayForDebug--;
+                ChangeLightingWithKeys(currentDelayForDebug);
+            }
+        }
+
+
+
         if (lightning)
         {
             timer += Time.deltaTime;
         }
 
-        Debug.Log((timer) + " : " + strikeCooldown);
-       
+        //Debug.Log((timer) + " : " + strikeCooldown);
 
-        if(timer >= strikeCooldown && lightningReady)
+
+        if (timer >= strikeCooldown && lightningReady)
         {
             lightningReady = false;
 
@@ -75,11 +121,11 @@ public class LightningStrike : MonoBehaviour
 
     private IEnumerator Strike()
     {
-        Debug.Log(currentDelay);
+        Debug.Log("currentDelay: " + currentDelay);
         float nextDelay = currentDelay - currentTime;
 
         lightiningStrike.intensity = MapRange(currentDelay, delay.x, delay.y, lightIntensity.y, lightIntensity.x);
-        if(nextDelay < 0f)
+        if (nextDelay < 0f)
         {
             PlayLightningSound();
         }
@@ -91,7 +137,7 @@ public class LightningStrike : MonoBehaviour
         while (time < currentTime)
         {
             time += Time.deltaTime;
-            if(time > flickerDelay)
+            if (time > flickerDelay)
             {
                 lightiningStrike.intensity += Random.Range(-10f, 10f);
                 flickerDelay += 0.1f;
@@ -113,6 +159,8 @@ public class LightningStrike : MonoBehaviour
 
         yield return new WaitForSeconds(strikeCooldown);
 
+        currentDelay = Random.Range(delay.x, delay.y);
+        currentTime = Random.Range(timeLightStaysOn.x, timeLightStaysOn.y);
         strikeCooldown = Random.Range(nextStrikeCooldown.x, nextStrikeCooldown.y);
 
         lightningReady = true;
@@ -122,7 +170,7 @@ public class LightningStrike : MonoBehaviour
 
     private void PlayLightningSound()
     {
-        lightingSound.volume = MapRange(currentDelay, delay.x, delay.y, lightSound.y, lightSound.x);
+        lightingSound.volume = MapRange(currentDelay, delayMeter[5].x, delayMeter[0].y, lightSound.y, lightSound.x);
         lightingSound.pitch = Random.Range(0.9f, 1.1f);
         lightingSound.clip = lightningSounds[Random.Range(0, lightningSounds.Count)];
         lightingSound.Play();
@@ -138,14 +186,19 @@ public class LightningStrike : MonoBehaviour
         lightning = !lightning;
     }
 
-    public void ToggleRain() 
+    public void ToggleRain()
     {
-        rainSound.SetActive(!rainSound.activeSelf);
+        rainSound.enabled = !rainSound.enabled;
     }
 
     public void TriggerLightning()
     {
         StartCoroutine(Strike());
+    }
+
+    public void ChangeLightingWithKeys(int value)
+    {
+        lightingIntensitySlider.value = value * 0.2f;
     }
 
     public void ChangeLightningIntensity()
@@ -163,6 +216,35 @@ public class LightningStrike : MonoBehaviour
                 smallest = i;
             }
         }
+
+        switch (smallest)
+        {
+            case 0:
+                delay = delayMeter[0];
+                break;
+            case 1:
+                delay = delayMeter[1];
+                break;
+            case 2:
+                delay = delayMeter[2];
+                break;
+            case 3:
+                delay = delayMeter[3];
+                break;
+            case 4:
+                delay = delayMeter[4];
+                break;
+            case 5:
+                delay = delayMeter[5];
+                break;
+            default:
+                delay = delayMeter[0];
+                break;
+        }
+
+        rainSound.volume = smallest * 0.2f + 0.1f;
+
+        Debug.Log("current lighting intesity: " + smallest);
 
         lightingIntensitySlider.value = smallest * 0.2f;
     }
