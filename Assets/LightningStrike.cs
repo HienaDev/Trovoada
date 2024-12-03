@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,10 +20,13 @@ public class LightningStrike : MonoBehaviour
     [SerializeField] private Light bigOutsideLight;
     [SerializeField] private float[] insideLightsValues;
     [SerializeField] private Light[] insideLights;
+    [SerializeField] private Renderer lightRender;
+    private Color initalLightBulbColor;
 
     [SerializeField] private Animator doorAnimator;
     private bool doorOpen;
-    private bool insideLightsOn;
+    [SerializeField] private AudioLowPassFilter[] lowPassFilter;
+    [SerializeField] private TextMeshProUGUI doorToggleText;
 
     [SerializeField] private Vector2 timeLightStaysOn = new Vector2(0.1f, 0.3f);
     private float currentTime;
@@ -42,7 +46,7 @@ public class LightningStrike : MonoBehaviour
     [SerializeField] private AudioClip strongLightning;
     private List<AudioClip> lightningSounds = new List<AudioClip>();
 
-   
+
     [SerializeField] private AudioSource rainSound;
     [SerializeField] private TextMeshProUGUI rainToggleText;
     [SerializeField] private ParticleSystem rainParticlesFront;
@@ -66,6 +70,11 @@ public class LightningStrike : MonoBehaviour
     {
 
         currentDelayForDebug = (int)(lightingIntensitySlider.value * 5f);
+
+        // Sphere is in children object
+        initalLightBulbColor = insideLights[0].gameObject.GetComponentInChildren<MeshRenderer>().material.GetColor("_EmissionColor");
+
+
 
         rainSound.enabled = false;
 
@@ -210,6 +219,34 @@ public class LightningStrike : MonoBehaviour
         return toMin + (value - fromMin) * (toMax - toMin) / (fromMax - fromMin);
     }
 
+    public void ToggleDoor()
+    {
+        if (doorOpen)
+        {
+            doorAnimator.ResetTrigger("Open");
+            doorAnimator.SetTrigger("Close");
+            doorToggleText.text = "Abrir Porta";
+            doorOpen = false;
+            foreach(AudioLowPassFilter filter in lowPassFilter)
+            {
+                filter.enabled = true;
+            }
+            
+        }
+        else
+        {
+
+            doorAnimator.ResetTrigger("Close");
+            doorAnimator.SetTrigger("Open");
+            doorToggleText.text = "Fechar Porta";
+            doorOpen = true;
+            foreach (AudioLowPassFilter filter in lowPassFilter)
+            {
+                filter.enabled = false;
+            }
+        }
+    }
+
     public void ToggleLightning()
     {
         lightning = !lightning;
@@ -255,7 +292,7 @@ public class LightningStrike : MonoBehaviour
 
     public void ChangeLightningIntensity()
     {
- 
+
         int currValue = (int)lightingIntensitySlider.value;
         delay = delayMeter[currValue];
 
@@ -285,7 +322,7 @@ public class LightningStrike : MonoBehaviour
         foreach (Light outside in outsideLights)
         {
             outside.intensity = outsideLightsValues[currValue];
-            
+
         }
 
         bigOutsideLight.enabled = currValue >= 3;
@@ -301,6 +338,10 @@ public class LightningStrike : MonoBehaviour
         foreach (Light inside in insideLights)
         {
             inside.intensity = insideLightsValues[currValue];
+            inside.gameObject.GetComponentInChildren<MeshRenderer>().material.SetColor("_EmissionColor", Color.Lerp(Color.black, initalLightBulbColor, (float)currValue / 5f));
+
+            Debug.Log(inside.gameObject.GetComponentInChildren<MeshRenderer>().material.GetColor("_EmissionColor"));
+            Debug.Log((float)currValue / 5f);
         }
     }
 }
