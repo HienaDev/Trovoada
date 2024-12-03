@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,6 +13,16 @@ public class LightningStrike : MonoBehaviour
     private Vector2 delay = new Vector2(0.3f, 3f);
     private float currentDelay;
     [SerializeField] private Vector2[] delayMeter;
+    [SerializeField] private float[] rainSoundMeter;
+    [SerializeField] private float[] outsideLightsValues;
+    [SerializeField] private Light[] outsideLights;
+    [SerializeField] private Light bigOutsideLight;
+    [SerializeField] private float[] insideLightsValues;
+    [SerializeField] private Light[] insideLights;
+
+    [SerializeField] private Animator doorAnimator;
+    private bool doorOpen;
+    private bool insideLightsOn;
 
     [SerializeField] private Vector2 timeLightStaysOn = new Vector2(0.1f, 0.3f);
     private float currentTime;
@@ -32,10 +43,15 @@ public class LightningStrike : MonoBehaviour
     private List<AudioClip> lightningSounds = new List<AudioClip>();
 
     [SerializeField] private AudioSource rainSound;
+    [SerializeField] private TextMeshProUGUI rainToggleText;
 
-    private bool lightning = true;
+    private bool lightning = false;
+    [SerializeField] private TextMeshProUGUI lightningToggleText;
 
     [SerializeField] private Slider lightingIntensitySlider;
+    [SerializeField] private Slider rainSoundSlider;
+    [SerializeField] private Slider outsideLightsSlider;
+    [SerializeField] private Slider insideLightsSlider;
     private int[] sliderGrid = new int[6] { 0, 20, 40, 60, 80, 100 };
 
 
@@ -46,7 +62,12 @@ public class LightningStrike : MonoBehaviour
 
         currentDelayForDebug = (int)(lightingIntensitySlider.value * 5f);
 
+        rainSound.enabled = false;
+
         ChangeLightningIntensity();
+        ChangeInsideLights();
+        ChangeOutsideLights();
+        ChangeRainSound();
 
         lightningReady = true;
         lightningSounds.Add(weakLightning);
@@ -184,11 +205,29 @@ public class LightningStrike : MonoBehaviour
     public void ToggleLightning()
     {
         lightning = !lightning;
+
+        if (lightning)
+        {
+            lightningToggleText.text = "Desligar Trovoada";
+        }
+        else
+        {
+            lightningToggleText.text = "Ligar Trovoada";
+        }
     }
 
     public void ToggleRain()
     {
         rainSound.enabled = !rainSound.enabled;
+
+        if (rainSound.enabled)
+        {
+            rainToggleText.text = "Desligar Chuva";
+        }
+        else
+        {
+            rainToggleText.text = "Ligar Chuva";
+        }
     }
 
     public void TriggerLightning()
@@ -203,7 +242,205 @@ public class LightningStrike : MonoBehaviour
 
     public void ChangeLightningIntensity()
     {
-        float currValue = lightingIntensitySlider.value * 100;
+        //float currValue = lightingIntensitySlider.value * 100;
+
+        //float minDistance = float.MaxValue;
+        //int smallest = 0;
+
+        //for (int i = 0; i < sliderGrid.Length; i++)
+        //{
+        //    if (Mathf.Abs(currValue - sliderGrid[i]) < minDistance)
+        //    {
+        //        minDistance = Mathf.Abs(currValue - sliderGrid[i]);
+        //        smallest = i;
+        //    }
+        //}
+
+        //switch (smallest)
+        //{
+        //    case 0:
+        //        delay = delayMeter[0];
+        //        break;
+        //    case 1:
+        //        delay = delayMeter[1];
+        //        break;
+        //    case 2:
+        //        delay = delayMeter[2];
+        //        break;
+        //    case 3:
+        //        delay = delayMeter[3];
+        //        break;
+        //    case 4:
+        //        delay = delayMeter[4];
+        //        break;
+        //    case 5:
+        //        delay = delayMeter[5];
+        //        break;
+        //    default:
+        //        delay = delayMeter[0];
+        //        break;
+        //}
+
+        int currValue = (int)lightingIntensitySlider.value;
+        delay = delayMeter[currValue];
+
+
+
+        ////rainSound.volume = smallest * 0.2f + 0.1f;
+
+        //Debug.Log("current lighting intesity: " + smallest);
+
+        //lightingIntensitySlider.value = smallest * 0.2f;
+    }
+
+    public void ChangeRainSound()
+    {
+        //float currValue = rainSoundSlider.value * 100;
+
+        //float minDistance = float.MaxValue;
+        //int smallest = 0;
+
+        //for (int i = 0; i < sliderGrid.Length; i++)
+        //{
+        //    if (Mathf.Abs(currValue - sliderGrid[i]) < minDistance)
+        //    {
+        //        minDistance = Mathf.Abs(currValue - sliderGrid[i]);
+        //        smallest = i;
+        //    }
+        //}
+
+        //switch (smallest)
+        //{
+        //    case 0:
+        //        rainSound.volume = rainSoundMeter[0];
+        //        break;
+        //    case 1:
+        //        rainSound.volume = rainSoundMeter[1];
+        //        break;
+        //    case 2:
+        //        rainSound.volume = rainSoundMeter[2];
+        //        break;
+        //    case 3:
+        //        rainSound.volume = rainSoundMeter[3];
+        //        break;
+        //    case 4:
+        //        rainSound.volume = rainSoundMeter[4];
+        //        break;
+        //    case 5:
+        //        rainSound.volume = rainSoundMeter[5];
+        //        break;
+        //    default:
+        //        rainSound.volume = rainSoundMeter[0];
+        //        break;
+        //}
+
+        ////rainSound.volume = smallest * 0.2f + 0.1f;
+
+        //Debug.Log("current lighting intesity: " + smallest);
+
+        //rainSoundSlider.value = smallest * 0.2f;
+
+        int currValue = (int)rainSoundSlider.value;
+        rainSound.volume = rainSoundMeter[currValue];
+    }
+
+    public void ChangeOutsideLights()
+    {
+        //float currValue = outsideLightsSlider.value * 100;
+
+        //float minDistance = float.MaxValue;
+        //int smallest = 0;
+
+        //for (int i = 0; i < sliderGrid.Length; i++)
+        //{
+        //    if (Mathf.Abs(currValue - sliderGrid[i]) < minDistance)
+        //    {
+        //        minDistance = Mathf.Abs(currValue - sliderGrid[i]);
+        //        smallest = i;
+        //    }
+        //}
+
+        //switch (smallest)
+        //{
+        //    case 0:
+        //        foreach (Light outside in outsideLights)
+        //        {
+        //            outside.intensity = outsideLightsValues[0];
+        //            bigOutsideLight.enabled = false;
+        //        }
+
+        //        break;
+        //    case 1:
+        //        foreach (Light outside in outsideLights)
+        //        {
+        //            outside.intensity = outsideLightsValues[1];
+        //            bigOutsideLight.enabled = false;
+        //        }
+
+        //        break;
+        //    case 2:
+        //        foreach (Light outside in outsideLights)
+        //        {
+        //            outside.intensity = outsideLightsValues[2];
+        //            bigOutsideLight.enabled = false;
+        //        }
+
+        //        break;
+        //    case 3:
+        //        foreach (Light outside in outsideLights)
+        //        {
+        //            outside.intensity = outsideLightsValues[3];
+        //            bigOutsideLight.enabled = true;
+        //        }
+
+        //        break;
+        //    case 4:
+        //        foreach (Light outside in outsideLights)
+        //        {
+        //            outside.intensity = outsideLightsValues[4];
+        //            bigOutsideLight.enabled = true;
+        //        }
+
+        //        break;
+        //    case 5:
+        //        foreach (Light outside in outsideLights)
+        //        {
+        //            outside.intensity = outsideLightsValues[5];
+        //            bigOutsideLight.enabled = true;
+        //        }
+
+        //        break;
+        //    default:
+        //        foreach (Light outside in outsideLights)
+        //        {
+        //            outside.intensity = outsideLightsValues[0];
+        //            bigOutsideLight.enabled = false;
+        //        }
+
+        //        break;
+        //}
+
+        ////rainSound.volume = smallest * 0.2f + 0.1f;
+
+        //Debug.Log("current lighting intesity: " + smallest);
+
+        //outsideLightsSlider.value = smallest * 0.2f;
+
+        int currValue = (int)outsideLightsSlider.value;
+        Debug.Log(currValue);
+        foreach (Light outside in outsideLights)
+        {
+            outside.intensity = outsideLightsValues[currValue];
+            
+        }
+
+        bigOutsideLight.enabled = currValue >= 3;
+
+    }
+
+    public void ChangeInsideLights()
+    {
+        float currValue = insideLightsSlider.value * 100;
 
         float minDistance = float.MaxValue;
         int smallest = 0;
@@ -220,32 +457,60 @@ public class LightningStrike : MonoBehaviour
         switch (smallest)
         {
             case 0:
-                delay = delayMeter[0];
+                foreach (Light inside in insideLights)
+                {
+                    inside.intensity = insideLightsValues[0];
+                }
+
                 break;
             case 1:
-                delay = delayMeter[1];
+                foreach (Light inside in insideLights)
+                {
+                    inside.intensity = insideLightsValues[1];
+                }
+
                 break;
             case 2:
-                delay = delayMeter[2];
+                foreach (Light inside in insideLights)
+                {
+                    inside.intensity = insideLightsValues[2];
+                }
+
                 break;
             case 3:
-                delay = delayMeter[3];
+                foreach (Light inside in insideLights)
+                {
+                    inside.intensity = insideLightsValues[3];
+                }
+
                 break;
             case 4:
-                delay = delayMeter[4];
+                foreach (Light inside in insideLights)
+                {
+                    inside.intensity = insideLightsValues[4];
+                }
+
                 break;
             case 5:
-                delay = delayMeter[5];
+                foreach (Light inside in insideLights)
+                {
+                    inside.intensity = insideLightsValues[5];
+                }
+
                 break;
             default:
-                delay = delayMeter[0];
+                foreach (Light inside in insideLights)
+                {
+                    inside.intensity = insideLightsValues[0];
+                }
+
                 break;
         }
 
-        rainSound.volume = smallest * 0.2f + 0.1f;
+        //rainSound.volume = smallest * 0.2f + 0.1f;
 
         Debug.Log("current lighting intesity: " + smallest);
 
-        lightingIntensitySlider.value = smallest * 0.2f;
+        insideLightsSlider.value = smallest * 0.2f;
     }
 }
