@@ -13,6 +13,8 @@ public class EntryUIManager : MonoBehaviour
 
     public string conditionText;
 
+    [SerializeField] private string nextScene;
+
 
     void Start()
     {
@@ -39,7 +41,7 @@ public class EntryUIManager : MonoBehaviour
     {
         //FindObjectOfType<DataManager>().questionnaireAnswers.Add("a01_userCode", codeText.text);
         //FindObjectOfType<DataManager>().questionnaireAnswers.Add("a02_condition", condition.text);
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene(nextScene);
     }
 
     public void ExitApp() => Application.Quit();

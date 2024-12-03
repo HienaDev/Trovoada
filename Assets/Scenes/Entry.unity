@@ -1021,6 +1021,7 @@ MonoBehaviour:
   codeText: {fileID: 338494366}
   codePanel: {fileID: 338078947}
   conditionText: 
+  nextScene: StrongThunder
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -1974,8 +1975,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 848069156}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: MoveToConsent
+        m_TargetAssemblyTypeName: EntryUIManager, Assembly-CSharp
+        m_MethodName: StartApp
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
