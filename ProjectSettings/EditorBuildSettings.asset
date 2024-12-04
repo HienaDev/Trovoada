@@ -6,13 +6,13 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/intro.unity
+    path: Assets/Scenes/Main Experience/intro.unity
     guid: 1f3ecfdccd0dbe14b8f7beba3a58115d
   - enabled: 1
-    path: Assets/Scenes/Entry.unity
+    path: Assets/Scenes/Main Experience/Entry.unity
     guid: 8f06ddc2caf862946945c6847d941620
   - enabled: 1
-    path: Assets/Scenes/StrongThunder.unity
+    path: Assets/Scenes/Main Experience/StrongThunder.unity
     guid: c026e8b615923dc46adc628199d1d55e
   m_configObjects:
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 417838936aa2cc448953d533a56c94d5, type: 2}
