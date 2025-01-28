@@ -66,6 +66,8 @@ public class LightningStrike : MonoBehaviour
 
     private int currentDelayForDebug;
 
+    [SerializeField] private TrackTime trackTimer;
+
     private IEnumerator Start()
     {
 
@@ -152,13 +154,14 @@ public class LightningStrike : MonoBehaviour
         if (timer >= strikeCooldown && lightningReady)
         {
             lightningReady = false;
-
+            trackTimer.HappenedLightning();
             StartCoroutine(Strike());
         }
     }
 
     private IEnumerator Strike()
     {
+
         Debug.Log("currentDelay: " + currentDelay);
         float nextDelay = currentDelay - currentTime;
 
@@ -245,11 +248,15 @@ public class LightningStrike : MonoBehaviour
                 filter.enabled = false;
             }
         }
+
+        trackTimer.ToggleDoor(doorOpen);
     }
 
     public void ToggleLightning()
     {
         lightning = !lightning;
+
+        trackTimer.ToggleLightning(lightning);
 
         if (lightning)
         {
@@ -270,6 +277,8 @@ public class LightningStrike : MonoBehaviour
         emissionModule = rainParticlesSide.emission;
         emissionModule.enabled = rainSound.enabled;
 
+        trackTimer.ToggleRain(rainSound.enabled);
+
         if (rainSound.enabled)
         {
             rainToggleText.text = "Desligar Chuva";
@@ -282,6 +291,7 @@ public class LightningStrike : MonoBehaviour
 
     public void TriggerLightning()
     {
+        trackTimer.CreateLightning();
         StartCoroutine(Strike());
     }
 
@@ -296,7 +306,7 @@ public class LightningStrike : MonoBehaviour
         int currValue = (int)lightingIntensitySlider.value;
         delay = delayMeter[currValue];
 
-
+        trackTimer.LightningIntesityChange(currValue);
     }
 
     public void ChangeRainIntensity()
@@ -312,6 +322,8 @@ public class LightningStrike : MonoBehaviour
         emissionModule = rainParticlesSide.emission;
         emissionModule.rateOverTime = emissionRateRainSide / (6 - currValue);
         Debug.Log("Side rain:  " + (emissionRateRainSide / (6 - currValue)));
+
+        trackTimer.RainIntesityChange(currValue);
     }
 
     public void ChangeOutsideLights()
@@ -326,6 +338,8 @@ public class LightningStrike : MonoBehaviour
         }
 
         bigOutsideLight.enabled = currValue >= 3;
+
+        trackTimer.OutsideLightsIntesityChange(currValue);
 
     }
 
@@ -343,5 +357,7 @@ public class LightningStrike : MonoBehaviour
             Debug.Log(inside.gameObject.GetComponentInChildren<MeshRenderer>().material.GetColor("_EmissionColor"));
             Debug.Log((float)currValue / 5f);
         }
+
+        trackTimer.InsideLightsIntesityChange(currValue);
     }
 }
