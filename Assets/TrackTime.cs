@@ -19,6 +19,19 @@ public class TrackTime : MonoBehaviour
 
     private Dictionary<int, float> timeRainIntensity = new Dictionary<int, float>();
 
+    private Dictionary<string, float> timeSpentOnEachIntesity = new Dictionary<string, float>();
+
+    private int doorOpen = 0;
+    private int rainToggle = 0;
+    private int lightningToggle = 0;
+    private int lightningItensity = 0;
+    private int rainIntensity = 0;
+    private int outsideLights = 0;
+    private int insideLights = 0;
+    private int numberOfLightning = 0;
+
+    //private int
+
     // Start is called before the first frame update
     void Start()
     {
@@ -47,49 +60,63 @@ public class TrackTime : MonoBehaviour
         }
     }
 
+    private void TrackTimeAndIntensity(int doorOpen, int rainToggle, int lightningToggle, int lightningItensity, int rainIntensity, int outsideLights, int insideLights)
+    {
+
+    }
+
     public void LightningIntesityChange(int intensity)
     {
         data += $"{GetCurrentTime()}: Lightning Intensity Changed to {intensity}\n";
+        lightningItensity = intensity ;
     }
 
     public void RainIntesityChange(int intensity)
     {
         data += $"{GetCurrentTime()}: Rain Intensity Changed to {intensity}\n";
+        rainIntensity = intensity ;
     }
 
     public void OutsideLightsIntesityChange(int intensity)
     {
         data += $"{GetCurrentTime()}: Outside Lights Level Changed to {intensity}\n";
+        outsideLights = intensity ;
     }
 
     public void InsideLightsIntesityChange(int intensity)
     {
         data += $"{GetCurrentTime()}: Inside Lights Level Changed to {intensity}\n";
+        insideLights = intensity ;
     }
 
     public void ToggleLightning(bool toggle)
     {
         data += $"{GetCurrentTime()}: Lightning turned {(toggle? "on" : "off")}\n";
+        lightningToggle = toggle ? 1 : 0;
     }
 
     public void ToggleRain(bool toggle)
     {
         data += $"{GetCurrentTime()}: Rain turned {(toggle ? "on" : "off")}\n";
+        rainToggle = toggle ? 1 : 0;
     }
 
     public void ToggleDoor(bool toggle)
     {
         data += $"{GetCurrentTime()}: Door is now {(toggle ? "open" : "closed")}\n";
+        doorOpen = toggle ? 1 : 0;
     }
 
     public void CreateLightning()
     {
         data += $"{GetCurrentTime()}: Lightning created\n";
+        numberOfLightning++;
     }
 
     public void HappenedLightning()
     {
         data += $"{GetCurrentTime()}: Lightning happened\n";
+        numberOfLightning++;
     }
 
     public string GetCurrentTime()
