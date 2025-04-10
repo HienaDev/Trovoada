@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class TrackTime : MonoBehaviour
 {
@@ -30,6 +31,8 @@ public class TrackTime : MonoBehaviour
     private int insideLights = 0;
     private int numberOfLightning = 0;
 
+    [SerializeField] private TemplateForSavingValuesInCSV csvSaver;
+
     //private int
 
     // Start is called before the first frame update
@@ -48,6 +51,43 @@ public class TrackTime : MonoBehaviour
         timeRainIntensity[3] = 0;
         timeRainIntensity[4] = 0;
         timeRainIntensity[5] = 0;
+
+        timeSpentOnEachIntesity["Intensidade Trovoada 0"] = 0f;
+        timeSpentOnEachIntesity["Intensidade Trovoada 1"] = 0f;
+        timeSpentOnEachIntesity["Intensidade Trovoada 2"] = 0f;
+        timeSpentOnEachIntesity["Intensidade Trovoada 3"] = 0f;
+        timeSpentOnEachIntesity["Intensidade Trovoada 4"] = 0f;
+        timeSpentOnEachIntesity["Intensidade Trovoada 5"] = 0f;
+
+        timeSpentOnEachIntesity["Itensidade Chuva 0"] = 0f;
+        timeSpentOnEachIntesity["Itensidade Chuva 1"] = 0f;
+        timeSpentOnEachIntesity["Itensidade Chuva 2"] = 0f;
+        timeSpentOnEachIntesity["Itensidade Chuva 3"] = 0f;
+        timeSpentOnEachIntesity["Itensidade Chuva 4"] = 0f;
+        timeSpentOnEachIntesity["Itensidade Chuva 5"] = 0f;
+
+        timeSpentOnEachIntesity["Intensidade Luzes na Rua 0"] = 0f;
+        timeSpentOnEachIntesity["Intensidade Luzes na Rua 1"] = 0f;
+        timeSpentOnEachIntesity["Intensidade Luzes na Rua 2"] = 0f;
+        timeSpentOnEachIntesity["Intensidade Luzes na Rua 3"] = 0f;
+        timeSpentOnEachIntesity["Intensidade Luzes na Rua 4"] = 0f;
+        timeSpentOnEachIntesity["Intensidade Luzes na Rua 5"] = 0f;
+
+        timeSpentOnEachIntesity["Itensidade Luzes em Casa 0"] = 0f;
+        timeSpentOnEachIntesity["Itensidade Luzes em Casa 1"] = 0f;
+        timeSpentOnEachIntesity["Itensidade Luzes em Casa 2"] = 0f;
+        timeSpentOnEachIntesity["Itensidade Luzes em Casa 3"] = 0f;
+        timeSpentOnEachIntesity["Itensidade Luzes em Casa 4"] = 0f;
+        timeSpentOnEachIntesity["Itensidade Luzes em Casa 5"] = 0f;
+
+        timeSpentOnEachIntesity["Porta Aberta"] = 0f;
+        timeSpentOnEachIntesity["Porta Fechada"] = 0f;
+
+        timeSpentOnEachIntesity["Trovoada Ligada"] = 0f;
+        timeSpentOnEachIntesity["Trovoada Desligada"] = 0f;
+
+        timeSpentOnEachIntesity["Chuva Ligada"] = 0f;
+        timeSpentOnEachIntesity["Chuva Desligada"] = 0f;
     }
 
     // Update is called once per frame
@@ -56,24 +96,78 @@ public class TrackTime : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.K))
         {
             Debug.Log("File created");
-            System.IO.File.WriteAllText(desktopPath + $"\\TrovoadaDataFile.txt", data);
+            string timeOfEachIntensity = "";
+
+            foreach (KeyValuePair<string, float> entry in timeSpentOnEachIntesity)
+            {
+                string timeSpent = string.Format("{0:D2}m:{1:D2}s:{2:D3}ms\n",
+                TimeSpan.FromSeconds(entry.Value).Minutes,
+                TimeSpan.FromSeconds(entry.Value).Seconds,
+                TimeSpan.FromSeconds(entry.Value).Milliseconds);
+                timeOfEachIntensity += entry.Key + " : " + timeSpent;
+
+                csvSaver.CreateCSV_OR_UPDATE(entry.Key, timeSpent, "175");
+            }
+            timeOfEachIntensity += $"Número de Relâmpagos durante a experiência : {numberOfLightning}";
+            csvSaver.CreateCSV_OR_UPDATE("Número de Relâmpagos durante a experiência", numberOfLightning.ToString(), "175");
+            data = timeOfEachIntensity + data;
+            System.IO.File.WriteAllText(desktopPath + $"\\TrovoadaDataFile175.txt", data);
         }
+
+        TrackTimeAndIntensity();
     }
 
-    private void TrackTimeAndIntensity(int doorOpen, int rainToggle, int lightningToggle, int lightningItensity, int rainIntensity, int outsideLights, int insideLights)
+    public void CreateFile(string participant)
     {
+
+    }
+
+    private void TrackTimeAndIntensity()
+    {
+        if(lightningToggle == 1)
+        {
+            timeSpentOnEachIntesity[$"Intensidade Trovoada {lightningItensity}"] += Time.deltaTime;
+            timeSpentOnEachIntesity["Trovoada Ligada"] += Time.deltaTime;
+        }
+        else
+        {
+            timeSpentOnEachIntesity["Trovoada Desligada"] += Time.deltaTime;
+        }
+
+        if(rainToggle == 1)
+        {
+            timeSpentOnEachIntesity[$"Itensidade Chuva {rainIntensity}"] += Time.deltaTime;
+            timeSpentOnEachIntesity["Chuva Ligada"] += Time.deltaTime;
+        }
+        else
+        {
+            timeSpentOnEachIntesity["Chuva Desligada"] += Time.deltaTime;
+        }
+
+        if (doorOpen == 1)
+        {
+            timeSpentOnEachIntesity["Porta Aberta"] += Time.deltaTime;
+        }
+        else
+        {
+            timeSpentOnEachIntesity["Porta Fechada"] += Time.deltaTime;
+        }
+
+        timeSpentOnEachIntesity[$"Intensidade Luzes na Rua {outsideLights}"] += Time.deltaTime;
+
+        timeSpentOnEachIntesity[$"Itensidade Luzes em Casa {insideLights}"] += Time.deltaTime;
 
     }
 
     public void LightningIntesityChange(int intensity)
     {
-        data += $"{GetCurrentTime()}: Lightning Intensity Changed to {intensity}\n";
+        data += $"{GetCurrentTime()}: Intensidade Trovoada Changed to {intensity}\n";
         lightningItensity = intensity ;
     }
 
     public void RainIntesityChange(int intensity)
     {
-        data += $"{GetCurrentTime()}: Rain Intensity Changed to {intensity}\n";
+        data += $"{GetCurrentTime()}: Itensidade Chuva Changed to {intensity}\n";
         rainIntensity = intensity ;
     }
 
