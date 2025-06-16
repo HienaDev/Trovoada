@@ -1,0 +1,11 @@
+Model Information:
+* title:	Building
+* source:	https://sketchfab.com/3d-models/building-961d85bf1b894bf38f6c343e67a0ec24
+* author:	mortalityrexotable (https://sketchfab.com/mortalityrexotable)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Building" (https://sketchfab.com/3d-models/building-961d85bf1b894bf38f6c343e67a0ec24) by mortalityrexotable (https://sketchfab.com/mortalityrexotable) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

@@ -1,0 +1,100 @@
+fileFormatVersion: 2
+guid: 3a75cc73fbcbd144e83ace173a07dc67
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 715df9372183c47e389bb6e19fbc3b52, type: 3}
+  editorImportSettings:
+    generateSecondaryUVSet: 0
+  importSettings:
+    nodeNameMethod: 1
+    animationMethod: 2
+    generateMipMaps: 1
+    texturesReadable: 0
+    defaultMinFilterMode: 9729
+    defaultMagFilterMode: 9729
+    anisotropicFilterLevel: 1
+  instantiationSettings:
+    mask: -1
+    layer: 0
+    skinUpdateWhenOffscreen: 1
+    lightIntensityFactor: 1
+    sceneObjectCreation: 2
+  assetDependencies:
+  - type: 0
+    originalUri: Assets\Models\Elevator Building\building_hallway\scene.bin
+    assetPath: Assets\Models\Elevator Building\building_hallway\scene.bin
+  - type: 1
+    originalUri: Assets\Models\Elevator Building\building_hallway\textures\ceilingtexture_baseColor.jpeg
+    assetPath: Assets\Models\Elevator Building\building_hallway\textures\ceilingtexture_baseColor.jpeg
+  - type: 1
+    originalUri: Assets\Models\Elevator Building\building_hallway\textures\ceilingtexture_normal.png
+    assetPath: Assets\Models\Elevator Building\building_hallway\textures\ceilingtexture_normal.png
+  - type: 1
+    originalUri: Assets\Models\Elevator Building\building_hallway\textures\Floor_baseColor.jpeg
+    assetPath: Assets\Models\Elevator Building\building_hallway\textures\Floor_baseColor.jpeg
+  - type: 1
+    originalUri: Assets\Models\Elevator Building\building_hallway\textures\Floor_metallicRoughness.png
+    assetPath: Assets\Models\Elevator Building\building_hallway\textures\Floor_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\Models\Elevator Building\building_hallway\textures\Floor_normal.jpeg
+    assetPath: Assets\Models\Elevator Building\building_hallway\textures\Floor_normal.jpeg
+  - type: 1
+    originalUri: Assets\Models\Elevator Building\building_hallway\textures\BlackTexture_baseColor.jpeg
+    assetPath: Assets\Models\Elevator Building\building_hallway\textures\BlackTexture_baseColor.jpeg
+  - type: 1
+    originalUri: Assets\Models\Elevator Building\building_hallway\textures\Brick_baseColor.jpeg
+    assetPath: Assets\Models\Elevator Building\building_hallway\textures\Brick_baseColor.jpeg
+  - type: 1
+    originalUri: Assets\Models\Elevator Building\building_hallway\textures\Brick_metallicRoughness.png
+    assetPath: Assets\Models\Elevator Building\building_hallway\textures\Brick_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\Models\Elevator Building\building_hallway\textures\Brick_normal.png
+    assetPath: Assets\Models\Elevator Building\building_hallway\textures\Brick_normal.png
+  - type: 1
+    originalUri: Assets\Models\Elevator Building\building_hallway\textures\walltexture_baseColor.jpeg
+    assetPath: Assets\Models\Elevator Building\building_hallway\textures\walltexture_baseColor.jpeg
+  - type: 1
+    originalUri: Assets\Models\Elevator Building\building_hallway\textures\walltexture_normal.jpeg
+    assetPath: Assets\Models\Elevator Building\building_hallway\textures\walltexture_normal.jpeg
+  - type: 1
+    originalUri: Assets\Models\Elevator Building\building_hallway\textures\plaster_baseColor.jpeg
+    assetPath: Assets\Models\Elevator Building\building_hallway\textures\plaster_baseColor.jpeg
+  - type: 1
+    originalUri: Assets\Models\Elevator Building\building_hallway\textures\plaster_metallicRoughness.png
+    assetPath: Assets\Models\Elevator Building\building_hallway\textures\plaster_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\Models\Elevator Building\building_hallway\textures\trim_baseColor.jpeg
+    assetPath: Assets\Models\Elevator Building\building_hallway\textures\trim_baseColor.jpeg
+  - type: 1
+    originalUri: Assets\Models\Elevator Building\building_hallway\textures\trim_normal.jpeg
+    assetPath: Assets\Models\Elevator Building\building_hallway\textures\trim_normal.jpeg
+  - type: 1
+    originalUri: Assets\Models\Elevator Building\building_hallway\textures\rock_baseColor.jpeg
+    assetPath: Assets\Models\Elevator Building\building_hallway\textures\rock_baseColor.jpeg
+  - type: 1
+    originalUri: Assets\Models\Elevator Building\building_hallway\textures\rock_metallicRoughness.png
+    assetPath: Assets\Models\Elevator Building\building_hallway\textures\rock_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\Models\Elevator Building\building_hallway\textures\rock_normal.png
+    assetPath: Assets\Models\Elevator Building\building_hallway\textures\rock_normal.png
+  - type: 1
+    originalUri: Assets\Models\Elevator Building\building_hallway\textures\Metal_Corrugated_baseColor.jpeg
+    assetPath: Assets\Models\Elevator Building\building_hallway\textures\Metal_Corrugated_baseColor.jpeg
+  - type: 1
+    originalUri: Assets\Models\Elevator Building\building_hallway\textures\metal_baseColor.jpeg
+    assetPath: Assets\Models\Elevator Building\building_hallway\textures\metal_baseColor.jpeg
+  - type: 1
+    originalUri: Assets\Models\Elevator Building\building_hallway\textures\like_baseColor.jpeg
+    assetPath: Assets\Models\Elevator Building\building_hallway\textures\like_baseColor.jpeg
+  - type: 1
+    originalUri: Assets\Models\Elevator Building\building_hallway\textures\door_baseColor.jpeg
+    assetPath: Assets\Models\Elevator Building\building_hallway\textures\door_baseColor.jpeg
+  - type: 1
+    originalUri: Assets\Models\Elevator Building\building_hallway\textures\door_normal.jpeg
+    assetPath: Assets\Models\Elevator Building\building_hallway\textures\door_normal.jpeg
+  reportItems: []
