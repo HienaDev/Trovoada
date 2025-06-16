@@ -15,6 +15,7 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+        rb.velocity = new Vector3(0f, rb.velocity.y, 0f);
         // Get input for movement (WASD or arrow keys)
         float moveHorizontal = Input.GetAxis("Horizontal"); // Left/Right movement
         float moveVertical = Input.GetAxis("Vertical");     // Forward/Backward movement
