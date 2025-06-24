@@ -1,0 +1,8 @@
+Model Information:
+* title:	Creative Commons Sandals
+* source:	https://sketchfab.com/3d-models/creative-commons-sandals-af3c587256c146baa928c71ffe9eff77
+* author:	wa_rouk (https://sketchfab.com/wa_rouk)
+
+Model License:
+* license type:	SKETCHFAB Standard (https://sketchfab.com/licenses)
+* requirements:	Under basic restrictions, use worldwide, on all types of media, commercially or not, and in all types of derivative works

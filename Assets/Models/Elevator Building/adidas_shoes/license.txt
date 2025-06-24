@@ -1,0 +1,11 @@
+Model Information:
+* title:	Adidas Shoes
+* source:	https://sketchfab.com/3d-models/adidas-shoes-e431c192455f4df2b79575ece66b2bd8
+* author:	Second Studio (https://sketchfab.com/kayaaku)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Adidas Shoes" (https://sketchfab.com/3d-models/adidas-shoes-e431c192455f4df2b79575ece66b2bd8) by Second Studio (https://sketchfab.com/kayaaku) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
