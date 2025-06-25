@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 
 public class FloorManager : MonoBehaviour
@@ -27,7 +28,7 @@ public class FloorManager : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float chanceOfSpawningObject = 0.25f;
     [SerializeField, Range(0f, 1f)] private float chanceOfSpawningMat = 0.25f;
     [SerializeField, Range(0f, 1f)] private float chanceOfSpawningPlant = 0.25f;
-    public int numberOfFloors = 5;
+    private int numberOfFloors = 5;
     public GameObject[] plants;
     public GameObject[] doormats;
     public GameObject[] objects;
@@ -44,12 +45,15 @@ public class FloorManager : MonoBehaviour
     private int[] savedPaintingIndices;
     private GameObject activePainting;
 
-    void Start()
+
+    public void Initalize(int numberOfFloors)
+
     {
+        this.numberOfFloors = numberOfFloors;
         InitializePaintings();
         GenerateFloorConfigurations();
         InstantiateAllDecor();
-        ApplyFloor(currentFloorIndex);
+        ApplyFloor(0);
     }
 
     void InitializePaintings()
