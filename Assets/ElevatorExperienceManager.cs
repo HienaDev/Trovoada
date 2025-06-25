@@ -7,7 +7,9 @@ using UnityEngine;
 public class ElevatorExperienceManager : MonoBehaviour
 {
 
+    [Header("General Config")]
     [SerializeField] private FloorManager floorManager;
+    [SerializeField] private int numberOfFloors = 5; // Default number of floors
 
     enum ElevatorType
     {
@@ -22,6 +24,10 @@ public class ElevatorExperienceManager : MonoBehaviour
         TwoByTwo
     }
 
+    [Header("Elevator Experience Configuration")]
+    [SerializeField] private float elevatorSpeed = 2f; // Time between floors
+
+    [Header("Elevator Configuration")]
     private ElevatorType currentElevatorType = ElevatorType.Normal;
     private GameObject currentElevatorObject;
     private ElevatorSize currentElevatorSize = ElevatorSize.TwoByTwo;
@@ -31,6 +37,7 @@ public class ElevatorExperienceManager : MonoBehaviour
     [SerializeField] private GameObject gridElevator;
     [SerializeField] private Animator gridElevatorAnimator;
 
+    [Header("Elevator Scales")]
     [SerializeField] private Vector2 twoByTwoElevatorScale = new Vector2(1f, 1f);
     [SerializeField] private Vector2 twoByOneElevatorScale = new Vector2(1f, 0.5f);
     [SerializeField] private Vector2 oneByOneElevatorScale = new Vector2(0.5f, 0.5f);
@@ -39,7 +46,7 @@ public class ElevatorExperienceManager : MonoBehaviour
 
     public void GoToFloor(int floor)
     {
-
+        floorManager.ApplyFloor(floor);
     }
 
     public void ToggleElevatorType()
@@ -86,7 +93,7 @@ public class ElevatorExperienceManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        floorManager.Initalize(numberOfFloors);
     }
 
     // Update is called once per frame
