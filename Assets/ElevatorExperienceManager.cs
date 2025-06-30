@@ -40,7 +40,7 @@ public class ElevatorExperienceManager : MonoBehaviour
 
 
     [Header("Elevator Configuration")]
-    private ElevatorType currentElevatorType = ElevatorType.Normal;
+    private ElevatorType currentElevatorType = ElevatorType.Grid;
     private GameObject currentElevatorObject;
     private GameObject currentElevatorChamber;
     private Animator currentElevatorAnimator;
@@ -48,6 +48,7 @@ public class ElevatorExperienceManager : MonoBehaviour
     private ElevatorState currentElevatorState = ElevatorState.Idle;
 
     [SerializeField] private TextMeshProUGUI elevatorTypeText;
+    [SerializeField] private TextMeshProUGUI elevatorScaleText;
     [SerializeField] private TextMeshProUGUI elevatorFloorText;
 
     [SerializeField] private Transform buttons;
@@ -92,8 +93,6 @@ public class ElevatorExperienceManager : MonoBehaviour
         }
         else
         {
-
-
 
             currentElevatorAnimator.SetTrigger("CloseDoor");
             yield return new WaitForSeconds(elevatorWaitTime);
@@ -166,16 +165,19 @@ public class ElevatorExperienceManager : MonoBehaviour
         {
             currentElevatorChamber.transform.localScale = new Vector3(twoByOneElevatorScale.x, 1f, twoByOneElevatorScale.y);
             currentElevatorSize = ElevatorSize.TwoByOne;
+            elevatorScaleText.text = "Escala: 2x1";
         }
         else if (currentElevatorSize == ElevatorSize.TwoByOne)
         {
             currentElevatorChamber.transform.localScale = new Vector3(oneByOneElevatorScale.x, 1f, oneByOneElevatorScale.y);
             currentElevatorSize = ElevatorSize.OneByOne;
+            elevatorScaleText.text = "Escala: 1x1";
         }
         else
         {
             currentElevatorChamber.transform.localScale = new Vector3(twoByTwoElevatorScale.x, 1f, twoByTwoElevatorScale.y);
             currentElevatorSize = ElevatorSize.TwoByTwo;
+            elevatorScaleText.text = "Escala: 2x2";
         }
 
         if(currentElevatorType == ElevatorType.Normal)
@@ -191,6 +193,41 @@ public class ElevatorExperienceManager : MonoBehaviour
 
     }
 
+    
+
+    public void CallElevator()
+    {
+        if (currentElevatorState == ElevatorState.Idle)
+        {
+            currentElevatorAnimator.SetTrigger("OpenDoor");
+        }
+    }
+
+    public void CloseElevator()
+    {
+        if (currentElevatorState == ElevatorState.Idle)
+        {
+            currentElevatorAnimator.SetTrigger("CloseDoor");
+        }
+    }
+
+    public void OpenElevatorOnNext()
+    {
+        if (currentElevatorState == ElevatorState.MovingUp)
+        {
+            targetFloor = currentFloor + 1;
+        }
+        else if (currentElevatorState == ElevatorState.MovingDown)
+        {
+            targetFloor = currentFloor - 1;
+        }
+        else
+        {
+            Debug.LogWarning("Elevator is not moving.");
+            return; // Exit if the elevator is not moving
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -201,10 +238,12 @@ public class ElevatorExperienceManager : MonoBehaviour
        
 
         ToggleElevatorType();
-        //ToggleElevatorType();
+        ToggleElevatorType();
 
-        ChangeElevatorScale();
-        ChangeElevatorScale();
+        //ChangeElevatorScale();
+        //ChangeElevatorScale();
+
+        //CallElevator();
 
         StartCoroutine(GoToFloor(4)); // Start at the first floor
     }
