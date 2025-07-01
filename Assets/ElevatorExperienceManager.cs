@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
@@ -74,6 +74,10 @@ public class ElevatorExperienceManager : MonoBehaviour
     [SerializeField] private Vector2 twoByOneElevatorScale = new Vector2(1f, 0.5f);
     [SerializeField] private Vector2 oneByOneElevatorScale = new Vector2(0.5f, 0.5f);
 
+    [Header("NPC Manager")]
+    [SerializeField] private NPCManager npcManager;
+
+   
 
     public IEnumerator GoToFloor(int floor)
     {
@@ -116,8 +120,6 @@ public class ElevatorExperienceManager : MonoBehaviour
 
         }
 
-
-
         if (floor == 0)
         {
             firstFloor.SetActive(true);
@@ -129,10 +131,32 @@ public class ElevatorExperienceManager : MonoBehaviour
             genericFloor.SetActive(true);
             floorManager.ApplyFloor(floor - 1); // Starts at index 0
         }
-
-
-
     }
+
+    private IEnumerator OpenElevator()
+    {
+        currentElevatorAnimator.SetTrigger("OpenDoor");
+        yield return StartCoroutine(WaitForAnimationToEnd("Base Layer.OpenDoor"));
+    }
+
+    private IEnumerator CloseElevatorIfNeeded()
+    {
+        bool hasPendingNPCFloors = npcManager.HasAnyNPCRequests(); 
+        bool hasTargetFloor = targetFloor != currentFloor;
+
+        if (hasPendingNPCFloors || hasTargetFloor)
+        {
+            currentElevatorAnimator.SetTrigger("CloseDoor");
+            yield return StartCoroutine(WaitForAnimationToEnd("Base Layer.CloseDoor"));
+        }
+        else
+        {
+            Debug.Log("No more destinations — keeping elevator door open.");
+        }
+    }
+
+
+
 
     public void ToggleElevatorType()
     {
@@ -232,6 +256,7 @@ public class ElevatorExperienceManager : MonoBehaviour
     void Start()
     {
         floorManager.Initalize(numberOfFloors);
+        npcManager.Initialize(numberOfFloors);
 
         elevatorFloorText.text = currentFloor.ToString();
 
@@ -248,46 +273,77 @@ public class ElevatorExperienceManager : MonoBehaviour
         StartCoroutine(GoToFloor(4)); // Start at the first floor
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (currentElevatorState != ElevatorState.Idle)
         {
             timeSinceLastFloorChange += Time.deltaTime;
+
             if (timeSinceLastFloorChange > elevatorSpeed)
             {
-
                 timeSinceLastFloorChange = 0;
+
                 if (currentElevatorState == ElevatorState.MovingUp)
-                {
                     currentFloor++;
-                }
                 else if (currentElevatorState == ElevatorState.MovingDown)
-                {
                     currentFloor--;
-                }
 
                 elevatorFloorText.text = currentFloor.ToString();
 
-                if (currentFloor < targetFloor)
+                bool shouldStop = currentFloor == targetFloor || npcManager.CheckIfShouldStopOnFloor(currentFloor);
+                if (shouldStop)
                 {
-                    currentElevatorState = ElevatorState.MovingUp;
-                }
-                else if (currentFloor > targetFloor)
-                {
-                    currentElevatorState = ElevatorState.MovingDown;
-                }
-                else
-                {
-                    currentElevatorAnimator.SetTrigger("OpenDoor");
                     currentElevatorState = ElevatorState.Idle;
-
-                    StartCoroutine(GoToFloor(0)); // Start at the first floor
+                    StartCoroutine(HandleElevatorStop());
                 }
 
                 Debug.Log("Elevator moved to floor: " + currentFloor);
             }
         }
-
     }
+
+
+    private IEnumerator HandleElevatorStop()
+    {
+        yield return OpenElevator();
+
+        npcManager.MoveNPCsToFloor(currentFloor);
+
+        yield return new WaitForSeconds(elevatorWaitTime);
+
+        yield return CloseElevatorIfNeeded();
+
+
+
+        if (targetFloor > currentFloor)
+            currentElevatorState = ElevatorState.MovingUp;
+        else if (targetFloor < currentFloor)
+            currentElevatorState = ElevatorState.MovingDown;
+        else
+            currentElevatorState = ElevatorState.Idle;
+    }
+
+
+
+    private IEnumerator WaitForAnimationToEnd(string animationName)
+    {
+        AnimatorStateInfo stateInfo = currentElevatorAnimator.GetCurrentAnimatorStateInfo(0);
+
+        // Wait until the animator starts playing the expected animation
+        while (!stateInfo.IsName(animationName))
+        {
+            yield return null;
+            stateInfo = currentElevatorAnimator.GetCurrentAnimatorStateInfo(0);
+        }
+
+        // Wait while the animation is playing
+        while (stateInfo.normalizedTime < 1.0f)
+        {
+            yield return null;
+            stateInfo = currentElevatorAnimator.GetCurrentAnimatorStateInfo(0);
+        }
+
+        Debug.Log("Animatino over: " + animationName);
+    }
+
 }
