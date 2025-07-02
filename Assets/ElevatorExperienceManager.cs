@@ -42,6 +42,10 @@ public class ElevatorExperienceManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI elevatorTypeText;
     [SerializeField] private TextMeshProUGUI elevatorScaleText;
     [SerializeField] private TextMeshProUGUI elevatorFloorText;
+    [SerializeField] private TextMeshProUGUI elevatorMusicText;
+
+    [SerializeField] private AudioSource music;
+    [SerializeField] private AudioSource audioDing;
 
     [SerializeField] private Transform buttons;
     [SerializeField] private Transform floorVisualizer;
@@ -73,12 +77,13 @@ public class ElevatorExperienceManager : MonoBehaviour
     [Header("NPC Manager")]
     [SerializeField] private NPCManager npcManager;
 
-    // Public API Methods
+    private bool playerInsideElevator = false;
+
     public void RegisterFloor(int floor)
     {
         if (floor < 0 || floor >= numberOfFloors)
         {
-            Debug.LogError($"Invalid floor number: {floor}");   
+            Debug.Log($"Invalid floor number: {floor}");
             return;
         }
 
@@ -96,8 +101,28 @@ public class ElevatorExperienceManager : MonoBehaviour
         // Start moving if idle
         if (currentElevatorState == ElevatorState.Idle)
         {
-            StartMoving();
+            Debug.Log("Starting elevator movement from idle state");
+            StartDoorOperation(false);
+            currentElevatorState = ElevatorState.DoorsClosing;
         }
+    }
+
+    public void ForceOpenElevatorOnNextFloor()
+    { 
+        if(currentElevatorState == ElevatorState.MovingUp && currentFloor < numberOfFloors)
+        {
+            RegisterFloor(currentFloor + 1);
+        }
+        else if (currentElevatorState == ElevatorState.MovingDown && currentFloor > 0)
+        {
+            RegisterFloor(currentFloor - 1);
+        }
+        else
+        {
+            Debug.LogWarning("Cannot force open elevator when not moving.");
+        }
+
+        
     }
 
     public void CallElevator()
@@ -176,9 +201,8 @@ public class ElevatorExperienceManager : MonoBehaviour
         ApplyFloorVisual(currentFloor);
 
         // Start door opening sequence
-        currentElevatorState = ElevatorState.DoorsOpening;
         doorTimer = 0f;
-        currentElevatorAnimator.SetTrigger("OpenDoor");
+        StartDoorOperation(true);
     }
 
     private void ApplyFloorVisual(int floor)
@@ -200,13 +224,16 @@ public class ElevatorExperienceManager : MonoBehaviour
     {
         if (opening)
         {
+            audioDing.Play();
             currentElevatorState = ElevatorState.DoorsOpening;
             currentElevatorAnimator.SetTrigger("OpenDoor");
+            currentElevatorAnimator.ResetTrigger("CloseDoor");
         }
         else
         {
             currentElevatorState = ElevatorState.DoorsClosing;
             currentElevatorAnimator.SetTrigger("CloseDoor");
+            currentElevatorAnimator.ResetTrigger("OpenDoor");
         }
         doorTimer = 0f;
     }
@@ -219,6 +246,48 @@ public class ElevatorExperienceManager : MonoBehaviour
     // Update method - handles all elevator logic
     void Update()
     {
+
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            CallElevator();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha0))
+        {
+            RegisterFloor(0);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            RegisterFloor(1);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            RegisterFloor(2);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            RegisterFloor(3);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            RegisterFloor(4);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            RegisterFloor(5);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha6))
+        {
+            RegisterFloor(6);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha7))
+        {
+            RegisterFloor(7);
+        }
+
+        if (!playerInsideElevator)
+            return;
+
         switch (currentElevatorState)
         {
             case ElevatorState.MovingUp:
@@ -238,6 +307,13 @@ public class ElevatorExperienceManager : MonoBehaviour
                 HandleWaitingAtFloor();
                 break;
         }
+    }
+
+    public void TogglePlayerLocation(bool toggle)
+    {
+        playerInsideElevator = toggle;
+
+        Debug.Log($"Player inside elevator: {playerInsideElevator}");
     }
 
     private void HandleMovement()
@@ -384,6 +460,19 @@ public class ElevatorExperienceManager : MonoBehaviour
         }
     }
 
+    public void ToggleMusic()
+    {
+        music.enabled = !music.enabled;
+        if(music.enabled)
+        {
+            elevatorMusicText.text = "Música: Ligada";
+        }
+        else
+        {
+            elevatorMusicText.text = "Música: Desligada";
+        }
+    }
+
     void Start()
     {
         floorManager.Initalize(numberOfFloors);
@@ -392,6 +481,6 @@ public class ElevatorExperienceManager : MonoBehaviour
         elevatorFloorText.text = currentFloor.ToString();
 
         ToggleElevatorType();
-
+        ToggleElevatorType();
     }
 }
