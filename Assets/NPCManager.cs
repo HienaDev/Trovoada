@@ -4,7 +4,9 @@ using UnityEngine.AI;
 
 public class NPCManager : MonoBehaviour
 {
-    public GameObject npcPrefab;
+    [SerializeField] private List<GameObject> npcPrefabs = new List<GameObject>();
+    private List<GameObject> shuffledNpcPrefabs = new List<GameObject>();
+    private int currentPrefabIndex = 0;
 
     public Transform[] doorPositions;
     public Transform[] elevatorPositions;
@@ -24,11 +26,46 @@ public class NPCManager : MonoBehaviour
     // Dictionary to track NPCs waiting on each floor
     private Dictionary<int, List<NPCController>> npcFloorMap = new Dictionary<int, List<NPCController>>();
 
+    void Start()
+    {
+        ShuffleNPCPrefabs();
+    }
+
+    private void ShuffleNPCPrefabs()
+    {
+        // Create a copy of the original list
+        shuffledNpcPrefabs.Clear();
+        shuffledNpcPrefabs.AddRange(npcPrefabs);
+
+        // Fisher-Yates shuffle algorithm
+        for (int i = shuffledNpcPrefabs.Count - 1; i > 0; i--)
+        {
+            int randomIndex = Random.Range(0, i + 1);
+            GameObject temp = shuffledNpcPrefabs[i];
+            shuffledNpcPrefabs[i] = shuffledNpcPrefabs[randomIndex];
+            shuffledNpcPrefabs[randomIndex] = temp;
+        }
+
+        Debug.Log("NPC Prefabs shuffled. Order: " + string.Join(", ", shuffledNpcPrefabs.ConvertAll(prefab => prefab.name)));
+    }
+
+    private GameObject GetNextNPCPrefab()
+    {
+        if (shuffledNpcPrefabs.Count == 0)
+        {
+            Debug.LogWarning("No NPC prefabs available!");
+            return null;
+        }
+
+        GameObject selectedPrefab = shuffledNpcPrefabs[currentPrefabIndex];
+        currentPrefabIndex = (currentPrefabIndex + 1) % shuffledNpcPrefabs.Count;
+        return selectedPrefab;
+    }
+
     public void Initialize(int floorNumber, ElevatorExperienceManager elevator)
     {
         numberOfFloors = floorNumber;
         elevatorManager = elevator;
-
     }
 
     void Update()
@@ -55,7 +92,11 @@ public class NPCManager : MonoBehaviour
         Transform spawnPoint = elevatorPositions[elevatorIndex];
         Transform doorTarget = GetRandomDoor();
 
-        GameObject npcGO = Instantiate(npcPrefab, spawnPoint.position, Quaternion.identity);
+        // Get the next NPC prefab in the shuffled order
+        GameObject selectedPrefab = GetNextNPCPrefab();
+        if (selectedPrefab == null) return;
+
+        GameObject npcGO = Instantiate(selectedPrefab, spawnPoint.position, Quaternion.identity);
         NPCController npc = npcGO.GetComponent<NPCController>();
         npc.agent = npcGO.GetComponent<NavMeshAgent>();
         npc.agent.speed = Random.Range(npcSpeed.x, npcSpeed.y);
@@ -68,7 +109,7 @@ public class NPCManager : MonoBehaviour
         int targetFloor = Random.Range(1, numberOfFloors);
         npc.targetFloor = targetFloor; // Store target floor in NPC
 
-        Debug.Log($"Spawning NPC with target floor: {targetFloor}");
+        Debug.Log($"Spawning NPC '{selectedPrefab.name}' with target floor: {targetFloor}");
 
         // Add NPC to floor tracking
         if (!npcFloorMap.ContainsKey(targetFloor))
@@ -78,7 +119,7 @@ public class NPCManager : MonoBehaviour
         npcFloorMap[targetFloor].Add(npc);
 
         // Register the floor with the elevator manager
-        elevatorManager.RegisterFloor(targetFloor);
+        elevatorManager.RegisterFloor(targetFloor, true);
 
         activeNPCs.Add(npc);
         usedElevatorIndices.Add(elevatorIndex);
@@ -94,18 +135,26 @@ public class NPCManager : MonoBehaviour
 
         Transform elevatorTarget = elevatorPositions[elevatorIndex];
 
-        GameObject npcGO = Instantiate(npcPrefab, spawnPoint.position, Quaternion.identity);
-        npcGO.transform.eulerAngles = new Vector3(0, -90f, 0);
+        // Get the next NPC prefab in the shuffled order
+        GameObject selectedPrefab = GetNextNPCPrefab();
+        if (selectedPrefab == null) return;
+
+        GameObject npcGO = Instantiate(selectedPrefab, spawnPoint.position, Quaternion.identity);
+
         var npc = npcGO.GetComponent<NPCController>();
         npc.agent = npcGO.GetComponent<NavMeshAgent>();
+        npc.agent.updateRotation = false;
+        npc.agent.updateUpAxis = false;
         npc.assignedElevator = elevatorTarget;
         npc.assignedDoor = spawnPoint;
+
+        npcGO.transform.eulerAngles = new Vector3(90f, -90f, 90f);
 
         // Generate target floor and register it with the elevator
         int targetFloor = Random.Range(1, numberOfFloors + 1);
         npc.targetFloor = targetFloor;
 
-        Debug.Log($"Spawning NPC from door with target floor: {targetFloor}");
+        Debug.Log($"Spawning NPC '{selectedPrefab.name}' from door with target floor: {targetFloor}");
 
         // Add NPC to floor tracking
         if (!npcFloorMap.ContainsKey(targetFloor))
@@ -210,7 +259,7 @@ public class NPCManager : MonoBehaviour
 
         activeNPCs.Remove(npc);
 
-        if(npc.gameObject != null)
+        if (npc.gameObject != null)
             Destroy(npc.gameObject);
     }
 

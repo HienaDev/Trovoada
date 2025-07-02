@@ -79,7 +79,7 @@ public class ElevatorExperienceManager : MonoBehaviour
 
     private bool playerInsideElevator = false;
 
-    public void RegisterFloor(int floor)
+    public void RegisterFloor(int floor, bool NPC = false)
     {
         if (floor < 0 || floor >= numberOfFloors)
         {
@@ -99,7 +99,7 @@ public class ElevatorExperienceManager : MonoBehaviour
         buttonMeshes[floor].material = buttonActiveMaterial;
 
         // Start moving if idle
-        if (currentElevatorState == ElevatorState.Idle)
+        if (currentElevatorState == ElevatorState.Idle && !NPC)
         {
             Debug.Log("Starting elevator movement from idle state");
             StartDoorOperation(false);
