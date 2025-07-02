@@ -1,29 +1,14 @@
 fileFormatVersion: 2
-guid: 94be58f42ebc5e84a8dcd1b9d57c4af6
+guid: c98057e79b12d154f9a0a0b784dc086b
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects:
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Ch08_body
-    second: {fileID: 2100000, guid: df03daf1fd144414893945810581bd2b, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Ch08_body1
-    second: {fileID: 2100000, guid: bad794b6eb1b1cb4dacb916a7aee425d, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Ch08_hair
-    second: {fileID: 2100000, guid: 53226a51efe69e44190e659b51ebae98, type: 2}
+  externalObjects: {}
   materials:
     materialImportMode: 2
     materialName: 0
     materialSearch: 1
-    materialLocation: 0
+    materialLocation: 1
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0

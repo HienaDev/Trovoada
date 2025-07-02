@@ -80,9 +80,9 @@ public class FloorManager : MonoBehaviour
             {
                 savedDoorConfigurations[floor][door] = new DoorConfiguration
                 {
-                    plantIndex = Random.value <= chanceOfSpawningPlant && plants.Length > 0 ? Random.Range(0, plants.Length) : -1,
-                    doormatIndex = Random.value <= chanceOfSpawningMat && doormats.Length > 0 ? Random.Range(0, doormats.Length) : -1,
-                    objectIndex = Random.value <= chanceOfSpawningObject && objects.Length > 0 ? Random.Range(0, objects.Length) : -1
+                    plantIndex = (Random.value <= chanceOfSpawningPlant && plants.Length > 0) ? Random.Range(0, plants.Length) : -1,
+                    doormatIndex = (Random.value <= chanceOfSpawningMat && doormats.Length > 0) ? Random.Range(0, doormats.Length) : -1,
+                    objectIndex = (Random.value <= chanceOfSpawningObject && objects.Length > 0) ? Random.Range(0, objects.Length) : -1
                 };
             }
 

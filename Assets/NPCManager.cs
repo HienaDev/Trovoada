@@ -18,33 +18,35 @@ public class NPCManager : MonoBehaviour
 
     private int numberOfFloors;
 
+    // Reference to the elevator manager to register floors
+    private ElevatorExperienceManager elevatorManager;
+
+    // Dictionary to track NPCs waiting on each floor
     private Dictionary<int, List<NPCController>> npcFloorMap = new Dictionary<int, List<NPCController>>();
 
-
-    public void Initialize(int floorNumber)
+    public void Initialize(int floorNumber, ElevatorExperienceManager elevator)
     {
         numberOfFloors = floorNumber;
+        elevatorManager = elevator;
 
-        SpawnFromElevator();
-
-        SpawnFromElevator();
-
-        SpawnFromElevator();
     }
 
     void Update()
     {
-        // For testing:
-        if (Input.GetKeyDown(KeyCode.Alpha1)) SpawnFromElevator();
-        if (Input.GetKeyDown(KeyCode.Alpha2)) SpawnFromDoor();
-        if (Input.GetKeyDown(KeyCode.Alpha3)) MoveAllToElevators();
-        if (Input.GetKeyDown(KeyCode.Alpha4)) MoveAllToDoors();
+
     }
-
-
 
     public void SpawnFromElevator()
     {
+        foreach (NPCController npcActive in activeNPCs)
+        {
+            if (npcActive == null || npcActive.gameObject == null)
+            {
+                RemoveNPC(npcActive);
+                return; // Exit early if we find a null NPC
+            }
+        }
+
         if (activeNPCs.Count >= MAX_NPCS) return;
 
         int elevatorIndex = GetFreeElevatorIndex();
@@ -60,42 +62,27 @@ public class NPCManager : MonoBehaviour
         npc.assignedElevator = spawnPoint;
         npc.assignedDoor = doorTarget;
 
-        npcGO.GetComponentInChildren<Animator>().SetTrigger(Random.Range(1 , 5) == 1 ? "Phone" : "Idle" );
+        npcGO.GetComponentInChildren<Animator>().SetTrigger(Random.Range(1, 5) == 1 ? "Phone" : "Idle");
 
-        int targetFloor = Random.Range(1, numberOfFloors + 1);
-        Debug.Log("Spawning NPC on floor: " + targetFloor);
+        // Generate target floor and register it with the elevator
+        int targetFloor = Random.Range(1, numberOfFloors);
+        npc.targetFloor = targetFloor; // Store target floor in NPC
 
+        Debug.Log($"Spawning NPC with target floor: {targetFloor}");
+
+        // Add NPC to floor tracking
         if (!npcFloorMap.ContainsKey(targetFloor))
         {
             npcFloorMap[targetFloor] = new List<NPCController>();
         }
         npcFloorMap[targetFloor].Add(npc);
 
+        // Register the floor with the elevator manager
+        elevatorManager.RegisterFloor(targetFloor);
 
         activeNPCs.Add(npc);
         usedElevatorIndices.Add(elevatorIndex);
     }
-
-    public bool CheckIfShouldStopOnFloor(int floor)
-    {
-        return npcFloorMap.ContainsKey(floor) && npcFloorMap[floor].Count > 0;
-
-    }
-
-    public bool HasAnyNPCRequests()
-    {
-        foreach (var kvp in npcFloorMap)
-        {
-            if (kvp.Value != null && kvp.Value.Count > 0)
-            {
-                return true; // There is at least one NPC waiting somewhere
-            }
-        }
-        return false; // No NPCs waiting anywhere
-    }
-
-
-
 
     public void SpawnFromDoor()
     {
@@ -108,23 +95,38 @@ public class NPCManager : MonoBehaviour
         Transform elevatorTarget = elevatorPositions[elevatorIndex];
 
         GameObject npcGO = Instantiate(npcPrefab, spawnPoint.position, Quaternion.identity);
-        npcGO.transform.eulerAngles = new Vector3(0, -90f, 0); 
+        npcGO.transform.eulerAngles = new Vector3(0, -90f, 0);
         var npc = npcGO.GetComponent<NPCController>();
         npc.agent = npcGO.GetComponent<NavMeshAgent>();
         npc.assignedElevator = elevatorTarget;
         npc.assignedDoor = spawnPoint;
 
+        // Generate target floor and register it with the elevator
+        int targetFloor = Random.Range(1, numberOfFloors + 1);
+        npc.targetFloor = targetFloor;
+
+        Debug.Log($"Spawning NPC from door with target floor: {targetFloor}");
+
+        // Add NPC to floor tracking
+        if (!npcFloorMap.ContainsKey(targetFloor))
+        {
+            npcFloorMap[targetFloor] = new List<NPCController>();
+        }
+        npcFloorMap[targetFloor].Add(npc);
+
+        // Register the floor with the elevator manager
+        elevatorManager.RegisterFloor(targetFloor);
+
         activeNPCs.Add(npc);
         usedElevatorIndices.Add(elevatorIndex);
     }
 
+    // This method is now only used for moving NPCs when elevator reaches their floor
     public void MoveNPCsToFloor(int floor)
     {
         if (!npcFloorMap.ContainsKey(floor)) return;
 
         List<NPCController> npcsToMove = npcFloorMap[floor];
-
-        // Use a separate list to avoid modifying the collection while iterating
         List<NPCController> movedNPCs = new List<NPCController>();
 
         foreach (var npc in npcsToMove)
@@ -137,15 +139,18 @@ public class NPCManager : MonoBehaviour
             }
         }
 
-        // Remove only moved NPCs from the floor list
+        // Remove moved NPCs from the floor list
         foreach (var npc in movedNPCs)
         {
             npcFloorMap[floor].Remove(npc);
         }
 
+        // Clean up empty floor entries
+        if (npcFloorMap[floor].Count == 0)
+        {
+            npcFloorMap.Remove(floor);
+        }
     }
-
-
 
     public void MoveAllToElevators()
     {
@@ -185,6 +190,7 @@ public class NPCManager : MonoBehaviour
 
     public void RemoveNPC(NPCController npc)
     {
+        // Remove from floor mapping
         foreach (var kvp in npcFloorMap)
         {
             if (kvp.Value.Contains(npc))
@@ -198,11 +204,20 @@ public class NPCManager : MonoBehaviour
             }
         }
 
-
+        // Free up elevator position
         int index = System.Array.IndexOf(elevatorPositions, npc.assignedElevator);
         if (index >= 0) usedElevatorIndices.Remove(index);
 
         activeNPCs.Remove(npc);
-        Destroy(npc.gameObject);
+
+        if(npc.gameObject != null)
+            Destroy(npc.gameObject);
+    }
+
+    // Optional: Method to check if there are NPCs waiting on a specific floor
+    // (kept for compatibility but shouldn't be needed with direct registration)
+    public bool HasNPCsOnFloor(int floor)
+    {
+        return npcFloorMap.ContainsKey(floor) && npcFloorMap[floor].Count > 0;
     }
 }
