@@ -46,6 +46,8 @@ public class ElevatorExperienceManager : MonoBehaviour
 
     [SerializeField] private AudioSource music;
     [SerializeField] private AudioSource audioDing;
+    [SerializeField] private AudioSource elevatorTravelSound1;
+    [SerializeField] private AudioSource elevatorTravelSound2;
 
     [SerializeField] private Transform buttons;
     [SerializeField] private Transform floorVisualizer;
@@ -144,6 +146,9 @@ public class ElevatorExperienceManager : MonoBehaviour
     // Core elevator logic
     private void StartMoving()
     {
+        elevatorTravelSound1.volume = 1f;
+        elevatorTravelSound2.volume = 1f;
+
         if (registeredFloors.Count == 0)
         {
             currentElevatorState = ElevatorState.Idle;
@@ -225,6 +230,8 @@ public class ElevatorExperienceManager : MonoBehaviour
         if (opening)
         {
             audioDing.Play();
+            elevatorTravelSound1.volume = 0f;
+            elevatorTravelSound2.volume = 0f;
             currentElevatorState = ElevatorState.DoorsOpening;
             currentElevatorAnimator.SetTrigger("OpenDoor");
             currentElevatorAnimator.ResetTrigger("CloseDoor");

@@ -1,22 +1,36 @@
+using Unity.XR.CoreUtils;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.XR.Interaction.Toolkit;
 
 public class TeleportOnCollision : MonoBehaviour
 {
     [SerializeField]
     private Transform teleportTarget;
-
     [SerializeField]
     private UnityEvent onTeleport;
+    [SerializeField] private ImageFader imageFader;
+    private Collider collider;
+
+    private void Start()
+    {
+        collider = GetComponent<Collider>();
+    }
 
     private void OnCollisionEnter(Collision collision)
     {
-        Teleport(collision.gameObject);
+        Debug.Log(collision.gameObject.name + " collided with " + gameObject.name);
+        collider.enabled = false;
+        imageFader.FadeInThenEventThenFadeOut();
+        imageFader.onFadeInComplete.AddListener(() => Teleport(collision.gameObject));
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        Teleport(other.gameObject);
+        Debug.Log(other.gameObject.name + " triggered " + gameObject.name);
+        collider.enabled = false;
+        imageFader.FadeInThenEventThenFadeOut();
+        imageFader.onFadeInComplete.AddListener(() => Teleport(other.gameObject));
     }
 
     private void Teleport(GameObject obj)
@@ -27,11 +41,37 @@ public class TeleportOnCollision : MonoBehaviour
             return;
         }
 
-        // Teleport position and rotation
-        obj.transform.position = teleportTarget.position;
-        obj.transform.rotation = teleportTarget.rotation;
+        XROrigin xrOrigin = obj.GetComponent<XROrigin>();
+        if (xrOrigin != null)
+        {
+            // Find and disable the Continuous Move Provider
+            var continuousMoveProvider = FindObjectOfType<ActionBasedContinuousMoveProvider>();
+            bool wasEnabled = false;
 
-        // Reset rigidbody velocity if present
+            if (continuousMoveProvider != null)
+            {
+                wasEnabled = continuousMoveProvider.enabled;
+                continuousMoveProvider.enabled = false;
+            }
+
+            // Now teleport directly
+            obj.transform.position = teleportTarget.position;
+            //obj.transform.rotation = teleportTarget.rotation;
+
+            // Re-enable after a short delay
+            if (continuousMoveProvider != null)
+            {
+                StartCoroutine(ReEnableMovement(continuousMoveProvider, wasEnabled));
+            }
+        }
+        else
+        {
+            // Regular object
+            obj.transform.position = teleportTarget.position;
+            //obj.transform.rotation = teleportTarget.rotation;
+        }
+
+        // Reset rigidbody velocity
         Rigidbody rb = obj.GetComponent<Rigidbody>();
         if (rb != null)
         {
@@ -39,7 +79,18 @@ public class TeleportOnCollision : MonoBehaviour
             rb.angularVelocity = Vector3.zero;
         }
 
-        // Invoke UnityEvent
+        collider.enabled = true;
         onTeleport?.Invoke();
+    }
+
+    private System.Collections.IEnumerator ReEnableMovement(ActionBasedContinuousMoveProvider moveProvider, bool wasEnabled)
+    {
+        // Wait a frame or two
+        yield return new WaitForSeconds(0.1f);
+
+        if (moveProvider != null)
+        {
+            moveProvider.enabled = wasEnabled;
+        }
     }
 }
