@@ -29711,10 +29711,18 @@ MonoBehaviour:
   chanceOfSpawningPlant: 0.25
   plants:
   - {fileID: 5543126960009226853, guid: ab5be0b88c80d154a9bf24d5f675e501, type: 3}
+  - {fileID: 7801868235024639517, guid: d044643d059de354197ae4bc6f92714f, type: 3}
+  - {fileID: 9123867766717651313, guid: a4323e0e59aa7b7418558c859f06d4ae, type: 3}
   doormats:
   - {fileID: 7154282105795213743, guid: a19dff7527dc5a94189384a29656ef60, type: 3}
+  - {fileID: 5536683170647880249, guid: 40c7804e221fd7c4c91fab5bb302f304, type: 3}
+  - {fileID: 9107939490531279275, guid: 6fea1a06b22d38b4998b5bc428678a56, type: 3}
   objects:
   - {fileID: 4172762895662199876, guid: d58b4a241f8378e41b7aaf217226bfb3, type: 3}
+  - {fileID: 965423242021522285, guid: 5e70cce7fb9a85e458f129eb0c810824, type: 3}
+  - {fileID: 1341961534214567048, guid: 20b11eaefe94703418acae743dda9993, type: 3}
+  - {fileID: 3492836579100406059, guid: da3b6d01ac55f18429f18b6aefb44504, type: 3}
+  - {fileID: 4179844114998824571, guid: 4188c0088c2714949907ceef0ad9910f, type: 3}
   paintings:
   - {fileID: 5103921565882964137, guid: c6b005006ba4bd64cadea234801b71b7, type: 3}
   doorVisuals:

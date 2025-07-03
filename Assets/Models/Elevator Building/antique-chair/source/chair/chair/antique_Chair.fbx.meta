@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 0d7fcb0ef3ba6a34f8dadd5b96aefba9
+guid: 9506331145b3b6d48ac7004b7662e35c
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -7,13 +7,8 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: POTHOS_Mat
-    second: {fileID: 2100000, guid: 54599a87bf9e4184b897629a9abad61b, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: WOODEN_LEGS_POT
-    second: {fileID: 2100000, guid: 85b7863592ef6be48912a7618cd17892, type: 2}
+      name: Chair_and_Rack
+    second: {fileID: 2100000, guid: f609f03b038ddd1468c87eb3e9b8f870, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

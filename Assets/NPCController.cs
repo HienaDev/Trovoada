@@ -12,6 +12,12 @@ public class NPCController : MonoBehaviour
 
     private Transform currentTarget;
 
+    [SerializeField] private Vector3 initialRotation = new Vector3(0f, -90f, 0f);
+
+    private void Start()
+    {
+        transform.rotation = Quaternion.Euler(initialRotation);
+    }
     private void Update()
     {
         if (currentTarget == null) return;

@@ -56,6 +56,15 @@ public class FloorManager : MonoBehaviour
         ApplyFloor(0);
     }
 
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            currentFloorIndex = (currentFloorIndex + 1) % numberOfFloors;
+            ApplyFloor(currentFloorIndex);
+        }
+    }
+
     void InitializePaintings()
     {
         shuffledPaintings = new List<GameObject>(paintings);
