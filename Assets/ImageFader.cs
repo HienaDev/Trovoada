@@ -9,6 +9,7 @@ public class ImageFader : MonoBehaviour
     public float fadeDuration = 1f;
     public float holdDuration = 1f; // Time to stay fully visible before fading out
     public UnityEvent onFadeInComplete;
+    public UnityEvent onFadeOutComplete;
 
     void Reset()
     {
@@ -57,5 +58,6 @@ public class ImageFader : MonoBehaviour
         onFadeInComplete?.Invoke();
         yield return new WaitForSeconds(holdDuration);
         yield return StartCoroutine(FadeImage(1f, 0f));
+        onFadeOutComplete?.Invoke();
     }
 }

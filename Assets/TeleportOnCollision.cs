@@ -31,6 +31,7 @@ public class TeleportOnCollision : MonoBehaviour
         collider.enabled = false;
         imageFader.FadeInThenEventThenFadeOut();
         imageFader.onFadeInComplete.AddListener(() => Teleport(other.gameObject));
+        imageFader.onFadeOutComplete.AddListener(() => collider.enabled = true);
     }
 
     private void Teleport(GameObject obj)
@@ -61,7 +62,7 @@ public class TeleportOnCollision : MonoBehaviour
             // Re-enable after a short delay
             if (continuousMoveProvider != null)
             {
-                StartCoroutine(ReEnableMovement(continuousMoveProvider, wasEnabled));
+                StartCoroutine(ReEnableMovement(continuousMoveProvider));
             }
         }
         else
@@ -79,18 +80,18 @@ public class TeleportOnCollision : MonoBehaviour
             rb.angularVelocity = Vector3.zero;
         }
 
-        collider.enabled = true;
+
         onTeleport?.Invoke();
     }
 
-    private System.Collections.IEnumerator ReEnableMovement(ActionBasedContinuousMoveProvider moveProvider, bool wasEnabled)
+    private System.Collections.IEnumerator ReEnableMovement(ActionBasedContinuousMoveProvider moveProvider)
     {
         // Wait a frame or two
         yield return new WaitForSeconds(0.1f);
 
         if (moveProvider != null)
         {
-            moveProvider.enabled = wasEnabled;
+            moveProvider.enabled = true;
         }
     }
 }

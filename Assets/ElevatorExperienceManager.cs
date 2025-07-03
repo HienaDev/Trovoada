@@ -81,6 +81,11 @@ public class ElevatorExperienceManager : MonoBehaviour
 
     private bool playerInsideElevator = false;
 
+    public void RegisterFloorNormal(int floor)
+    {
+        RegisterFloor(floor);
+    }
+
     public void RegisterFloor(int floor, bool NPC = false)
     {
         if (floor < 0 || floor >= numberOfFloors)
