@@ -136,7 +136,7 @@ public class ElevatorExperienceManager : MonoBehaviour
     {
         if (currentElevatorState == ElevatorState.Idle)
         {
-            StartDoorOperation(true);
+            StartDoorOperation(true, true);
         }
     }
 
@@ -144,7 +144,8 @@ public class ElevatorExperienceManager : MonoBehaviour
     {
         if (currentElevatorState == ElevatorState.Idle)
         {
-            StartDoorOperation(false);
+            Debug.Log("Close elevator");
+            StartDoorOperation(false, true);
         }
     }
 
@@ -230,20 +231,25 @@ public class ElevatorExperienceManager : MonoBehaviour
         }
     }
 
-    private void StartDoorOperation(bool opening)
+    private void StartDoorOperation(bool opening, bool force = false)
     {
         if (opening)
         {
             audioDing.Play();
             elevatorTravelSound1.volume = 0f;
             elevatorTravelSound2.volume = 0f;
-            currentElevatorState = ElevatorState.DoorsOpening;
+
+            if(!force)
+                currentElevatorState = ElevatorState.DoorsOpening;
+
             currentElevatorAnimator.SetTrigger("OpenDoor");
             currentElevatorAnimator.ResetTrigger("CloseDoor");
         }
         else
         {
-            currentElevatorState = ElevatorState.DoorsClosing;
+            if (!force)
+                currentElevatorState = ElevatorState.DoorsClosing;
+
             currentElevatorAnimator.SetTrigger("CloseDoor");
             currentElevatorAnimator.ResetTrigger("OpenDoor");
         }
