@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.AI;
+using System.Collections;
+
 
 public class NPCManager : MonoBehaviour
 {
@@ -9,7 +11,10 @@ public class NPCManager : MonoBehaviour
     private int currentPrefabIndex = 0;
 
     public Transform[] doorPositions;
+    private Transform[] currentElevatorPositions;
     public Transform[] elevatorPositions;
+    public Transform[] elevatorPositions2x1;
+    public Transform[] elevatorPositions1x1;
 
     private List<NPCController> activeNPCs = new List<NPCController>();
     private HashSet<int> usedElevatorIndices = new HashSet<int>();
@@ -28,6 +33,7 @@ public class NPCManager : MonoBehaviour
 
     void Start()
     {
+        currentElevatorPositions = elevatorPositions;
         ShuffleNPCPrefabs();
     }
 
@@ -68,9 +74,32 @@ public class NPCManager : MonoBehaviour
         elevatorManager = elevator;
     }
 
-    void Update()
+    public IEnumerator ChangeNPCPositions(ElevatorExperienceManager.ElevatorSize size)
     {
 
+        // Guarantee that we remove every NPC;
+        RemoveFirstNPC();
+        RemoveFirstNPC();
+        RemoveFirstNPC();
+
+        yield return new WaitForSeconds(4f); // Wait for NPCs to be removed
+
+        switch (size)
+        {
+            case ElevatorExperienceManager.ElevatorSize.TwoByOne:
+                currentElevatorPositions = elevatorPositions2x1;
+                break;
+            case ElevatorExperienceManager.ElevatorSize.OneByOne:
+                currentElevatorPositions = elevatorPositions1x1;
+                break;
+            default:
+                currentElevatorPositions = elevatorPositions; // Default to 2x1 if size is not recognized
+                break;
+        }
+        // Clear used indices when changing positions
+        usedElevatorIndices.Clear();
+
+        Debug.Log($"NPC positions changed to {size} with {currentElevatorPositions.Length} available elevators.");
     }
 
     public void SpawnFromElevator()
@@ -84,12 +113,12 @@ public class NPCManager : MonoBehaviour
             }
         }
 
-        if (activeNPCs.Count >= MAX_NPCS) return;
+        if (activeNPCs.Count >= currentElevatorPositions.Length) return;
 
         int elevatorIndex = GetFreeElevatorIndex();
         if (elevatorIndex == -1) return;
 
-        Transform spawnPoint = elevatorPositions[elevatorIndex];
+        Transform spawnPoint = currentElevatorPositions[elevatorIndex];
         Transform doorTarget = GetRandomDoor();
 
         // Get the next NPC prefab in the shuffled order
@@ -125,6 +154,7 @@ public class NPCManager : MonoBehaviour
         usedElevatorIndices.Add(elevatorIndex);
     }
 
+
     public void SpawnFromDoor()
     {
         if (activeNPCs.Count >= MAX_NPCS) return;
@@ -133,7 +163,7 @@ public class NPCManager : MonoBehaviour
         int elevatorIndex = GetFreeElevatorIndex();
         if (elevatorIndex == -1) return;
 
-        Transform elevatorTarget = elevatorPositions[elevatorIndex];
+        Transform elevatorTarget = currentElevatorPositions[elevatorIndex];
 
         // Get the next NPC prefab in the shuffled order
         GameObject selectedPrefab = GetNextNPCPrefab();
@@ -226,7 +256,7 @@ public class NPCManager : MonoBehaviour
     private int GetFreeElevatorIndex()
     {
         List<int> freeIndices = new List<int>();
-        for (int i = 0; i < elevatorPositions.Length; i++)
+        for (int i = 0; i < currentElevatorPositions.Length; i++)
         {
             if (!usedElevatorIndices.Contains(i))
                 freeIndices.Add(i);
@@ -235,6 +265,18 @@ public class NPCManager : MonoBehaviour
         if (freeIndices.Count == 0) return -1;
 
         return freeIndices[Random.Range(0, freeIndices.Count)];
+    }
+
+    public void RemoveFirstNPC() => StartCoroutine(RemoveFirstNPCCR());
+
+    public IEnumerator RemoveFirstNPCCR()
+    {
+        if (activeNPCs.Count == 0) yield break;
+        elevatorManager.CloseElevator();
+        yield return new WaitForSeconds(3f); // Wait for 1 second before removing
+
+        NPCController npcToRemove = activeNPCs[0];
+        RemoveNPC(npcToRemove);
     }
 
     public void RemoveNPC(NPCController npc)
@@ -254,10 +296,11 @@ public class NPCManager : MonoBehaviour
         }
 
         // Free up elevator position
-        int index = System.Array.IndexOf(elevatorPositions, npc.assignedElevator);
+        int index = System.Array.IndexOf(currentElevatorPositions, npc.assignedElevator);
         if (index >= 0) usedElevatorIndices.Remove(index);
 
         activeNPCs.Remove(npc);
+        elevatorManager.UnregisterFloor(npc.targetFloor);
 
         if (npc.gameObject != null)
             Destroy(npc.gameObject);

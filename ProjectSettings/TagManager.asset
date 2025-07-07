@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Left Hand
   - Right Hand
+  - GridWall
   layers:
   - Default
   - TransparentFX

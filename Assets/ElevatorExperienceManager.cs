@@ -12,7 +12,7 @@ public class ElevatorExperienceManager : MonoBehaviour
     [SerializeField] private int numberOfFloors = 5;
 
     enum ElevatorType { Normal, Grid }
-    enum ElevatorSize { OneByOne, TwoByOne, TwoByTwo }
+    public enum ElevatorSize { OneByOne, TwoByOne, TwoByTwo }
     enum ElevatorState { Idle, MovingUp, MovingDown, DoorsOpening, DoorsClosing, WaitingAtFloor }
     enum Direction { None, Up, Down }
 
@@ -38,6 +38,7 @@ public class ElevatorExperienceManager : MonoBehaviour
     private GameObject currentElevatorChamber;
     private Animator currentElevatorAnimator;
     private ElevatorSize currentElevatorSize = ElevatorSize.TwoByTwo;
+    [SerializeField] private VerticalMover gridElevatorWallMover;
 
     [SerializeField] private TextMeshProUGUI elevatorTypeText;
     [SerializeField] private TextMeshProUGUI elevatorScaleText;
@@ -105,7 +106,7 @@ public class ElevatorExperienceManager : MonoBehaviour
         Debug.Log($"Registered floor {floor}. Queue: [{string.Join(", ", registeredFloors.OrderBy(f => f))}]");
         buttonMeshes[floor].material = buttonActiveMaterial;
 
-        // Start moving if idle
+        // Start moving if idle and wasn't called by NPC
         if (currentElevatorState == ElevatorState.Idle && !NPC)
         {
             Debug.Log("Starting elevator movement from idle state");
@@ -114,9 +115,28 @@ public class ElevatorExperienceManager : MonoBehaviour
         }
     }
 
+    public void UnregisterFloor(int floor)
+    {
+        if (floor < 0 || floor >= numberOfFloors)
+        {
+            Debug.Log($"Invalid floor number: {floor}");
+            return;
+        }
+
+        if (!registeredFloors.Contains(floor))
+        {
+            Debug.Log($"Floor {floor} is not registered, cannot unregister.");
+            return;
+        }
+
+        registeredFloors.Remove(floor);
+        Debug.Log($"Remove registered floor: " + floor);
+        buttonMeshes[floor].material = buttonInactiveMaterial;
+    }
+
     public void ForceOpenElevatorOnNextFloor()
-    { 
-        if(currentElevatorState == ElevatorState.MovingUp && currentFloor < numberOfFloors)
+    {
+        if (currentElevatorState == ElevatorState.MovingUp && currentFloor < numberOfFloors)
         {
             RegisterFloor(currentFloor + 1);
         }
@@ -129,7 +149,7 @@ public class ElevatorExperienceManager : MonoBehaviour
             Debug.LogWarning("Cannot force open elevator when not moving.");
         }
 
-        
+
     }
 
     public void CallElevator()
@@ -206,7 +226,7 @@ public class ElevatorExperienceManager : MonoBehaviour
         Debug.Log($"Stopping at floor {currentFloor}");
 
         // Remove this floor from registered floors
-        registeredFloors.Remove(currentFloor);
+        UnregisterFloor(currentFloor);
 
         // Apply the floor visual
         ApplyFloorVisual(currentFloor);
@@ -239,7 +259,7 @@ public class ElevatorExperienceManager : MonoBehaviour
             elevatorTravelSound1.volume = 0f;
             elevatorTravelSound2.volume = 0f;
 
-            if(!force)
+            if (!force)
                 currentElevatorState = ElevatorState.DoorsOpening;
 
             currentElevatorAnimator.SetTrigger("OpenDoor");
@@ -314,14 +334,17 @@ public class ElevatorExperienceManager : MonoBehaviour
                 break;
 
             case ElevatorState.DoorsOpening:
+                gridElevatorWallMover.direction = VerticalMover.MoveDirection.Still;
                 HandleDoorOpening();
                 break;
 
             case ElevatorState.DoorsClosing:
+                gridElevatorWallMover.direction = VerticalMover.MoveDirection.Still;
                 HandleDoorClosing();
                 break;
 
             case ElevatorState.WaitingAtFloor:
+                gridElevatorWallMover.direction = VerticalMover.MoveDirection.Still;
                 HandleWaitingAtFloor();
                 break;
         }
@@ -338,15 +361,26 @@ public class ElevatorExperienceManager : MonoBehaviour
     {
         timeSinceLastFloorChange += Time.deltaTime;
 
+        if(currentElevatorState == ElevatorState.MovingUp)
+            gridElevatorWallMover.direction = VerticalMover.MoveDirection.Down;
+        else if (currentElevatorState == ElevatorState.MovingDown)
+            gridElevatorWallMover.direction = VerticalMover.MoveDirection.Up;
+
         if (timeSinceLastFloorChange >= elevatorSpeed)
         {
             timeSinceLastFloorChange = 0f;
 
             // Move to next floor
             if (currentElevatorState == ElevatorState.MovingUp)
+            {
                 currentFloor++;
+            }
+
             else if (currentElevatorState == ElevatorState.MovingDown)
+            {
                 currentFloor--;
+            }
+
 
             elevatorFloorText.text = currentFloor.ToString();
             Debug.Log($"Elevator moved to floor: {currentFloor}");
@@ -466,6 +500,8 @@ public class ElevatorExperienceManager : MonoBehaviour
             elevatorScaleText.text = "Escala: 2x2";
         }
 
+        StartCoroutine(npcManager.ChangeNPCPositions(currentElevatorSize));
+
         if (currentElevatorType == ElevatorType.Normal)
         {
             buttons.position = normalElevatorButtonPosition.position;
@@ -481,7 +517,7 @@ public class ElevatorExperienceManager : MonoBehaviour
     public void ToggleMusic()
     {
         music.enabled = !music.enabled;
-        if(music.enabled)
+        if (music.enabled)
         {
             elevatorMusicText.text = "Música: Ligada";
         }
@@ -495,6 +531,7 @@ public class ElevatorExperienceManager : MonoBehaviour
     {
         floorManager.Initalize(numberOfFloors);
         npcManager.Initialize(numberOfFloors, this);
+        gridElevatorWallMover.Initalize(elevatorSpeed);
 
         elevatorFloorText.text = currentFloor.ToString();
 
