@@ -13739,6 +13739,8 @@ MonoBehaviour:
   goingStartDownPosition: {fileID: 1291177982}
   directionToTrigger: 1
   verticalMover: {fileID: 1480826565}
+  wall1: {fileID: 1811246945}
+  wall2: {fileID: 31418318}
 --- !u!65 &715226792
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -17914,6 +17916,8 @@ MonoBehaviour:
   goingStartDownPosition: {fileID: 1291177982}
   directionToTrigger: 0
   verticalMover: {fileID: 1480826565}
+  wall1: {fileID: 1811246945}
+  wall2: {fileID: 31418318}
 --- !u!54 &957281950
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -28265,6 +28269,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   direction: 2
   speed: 1
+  controlGridWall: {fileID: 957281949}
 --- !u!1 &1483608069
 GameObject:
   m_ObjectHideFlags: 0

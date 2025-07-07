@@ -7,10 +7,14 @@ public class VerticalMover : MonoBehaviour
 
     public float speed = 2f;
 
+    private MoveDirection lastDirection;
+
+    [SerializeField] private ControlGridWall controlGridWall;
 
     public void Initalize(float elevatorSpeed)
     {
         speed = 1 / elevatorSpeed * 5.3f;
+
     }
 
     void Update()
@@ -20,12 +24,25 @@ public class VerticalMover : MonoBehaviour
         switch (direction)
         {
             case MoveDirection.Up:
+                if(lastDirection != MoveDirection.Up)
+                {
+                    controlGridWall.ResetPositions();
+                    lastDirection = MoveDirection.Up;
+                    Debug.Log("Moving Up");
+                }
                 movement = Vector3.up;
                 break;
             case MoveDirection.Down:
+                if (lastDirection != MoveDirection.Down)
+                {
+                    controlGridWall.ResetPositions();
+                    lastDirection = MoveDirection.Down;
+                    Debug.Log("Moving Down");
+                }
                 movement = Vector3.down;
                 break;
             case MoveDirection.Still:
+                
                 movement = Vector3.zero;
                 break;
         }

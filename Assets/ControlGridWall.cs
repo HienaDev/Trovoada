@@ -12,10 +12,16 @@ public class ControlGridWall : MonoBehaviour
 
     [SerializeField] private VerticalMover verticalMover;
 
+    [SerializeField] private Transform wall1;
+    private Vector3 wall1StartPosition;
+    [SerializeField] private Transform wall2;
+    private Vector3 wall2StartPosition;
+
     // Start is called before the first frame update
     void Start()
     {
-
+        wall1StartPosition = wall1.position;
+        wall2StartPosition = wall2.position;
     }
 
     // Update is called once per frame
@@ -36,5 +42,11 @@ public class ControlGridWall : MonoBehaviour
                 other.transform.position = goingStartDownPosition.position;
             }
         }
+    }
+
+    public void ResetPositions()
+    {
+        wall1.position = wall1StartPosition;
+        wall2.position = wall2StartPosition;
     }
 }
