@@ -353,7 +353,15 @@ public class ElevatorExperienceManager : MonoBehaviour
     public void TogglePlayerLocation(bool toggle)
     {
         playerInsideElevator = toggle;
-
+        if(!playerInsideElevator)
+        {
+            currentElevatorState = ElevatorState.Idle;
+        }
+        else
+        {
+            currentElevatorState = ElevatorState.WaitingAtFloor;
+        }
+        waitTimer = 0f;
         Debug.Log($"Player inside elevator: {playerInsideElevator}");
     }
 
