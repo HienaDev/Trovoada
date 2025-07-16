@@ -1,0 +1,11 @@
+Model Information:
+* title:	trash pack
+* source:	https://sketchfab.com/3d-models/trash-pack-c6a47b02e6164a6084b8e0a1e16c025e
+* author:	Man1ac (https://sketchfab.com/Maniac1)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "trash pack" (https://sketchfab.com/3d-models/trash-pack-c6a47b02e6164a6084b8e0a1e16c025e) by Man1ac (https://sketchfab.com/Maniac1) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
